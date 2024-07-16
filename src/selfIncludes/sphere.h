@@ -5,10 +5,11 @@
 #include <iostream>
 #include <list>
 
+//Too lazy to rename to circle
 class Sphere : public Object {
 public:
     int radius;
-    int mass;
+    double mass;
     bool magnetic;
     Sphere(){
         this->magnetic = false;
