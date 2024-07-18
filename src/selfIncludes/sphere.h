@@ -21,17 +21,17 @@ public:
         this->mass = mass;
     }
 
-    void Draw(SDL_Renderer *renderer){
+    void Draw(SDL_Renderer *renderer, int offsetX, int offsetY){
         int sX = radius;
         int sY = 0;
         int tmp = 1 - radius;
 
         std::list<SDL_Point> points;
 
-        SDL_Point p1 = {this->position.x + radius, this->position.y};
-        SDL_Point p2 = {this->position.x, this->position.y + radius};
-        SDL_Point p3 = {this->position.x, this->position.y - radius};
-        SDL_Point p4 = {this->position.x - radius, this->position.y};
+        SDL_Point p1 = {this->position.x + offsetX + radius, -this->position.y + offsetY};
+        SDL_Point p2 = {this->position.x + offsetX, -this->position.y + offsetY + radius};
+        SDL_Point p3 = {this->position.x + offsetX, -this->position.y + offsetY - radius};
+        SDL_Point p4 = {this->position.x + offsetX - radius, -this->position.y + offsetY};
 
         points.push_front(p1);
         points.push_front(p2);
@@ -53,20 +53,20 @@ public:
                 break;
             }
 
-            p1 = {sX + this->position.x, sY + this->position.y};
-            p2 = {-sX + this->position.x, sY + this->position.y};
-            p3 = {sX + this->position.x, -sY + this->position.y};
-            p4 = {-sX + this->position.x, -sY + this->position.y};
+            p1 = {sX + this->position.x + offsetX, sY + -this->position.y + offsetY};
+            p2 = {-sX + this->position.x + offsetX, sY + -this->position.y + offsetY};
+            p3 = {sX + this->position.x + offsetX, -sY + -this->position.y + offsetY};
+            p4 = {-sX + this->position.x + offsetX, -sY + -this->position.y + offsetY};
 
             points.push_front(p1);
             points.push_front(p2);
             points.push_front(p3);
             points.push_front(p4);
 
-            p1 = {sY + this->position.x, sX + this->position.y};
-            p2 = {-sY + this->position.x, sX + this->position.y};
-            p3 = {sY + this->position.x, -sX + this->position.y};
-            p4 = {-sY + this->position.x, -sX + this->position.y};
+            p1 = {sY + this->position.x + offsetX, sX + -this->position.y + offsetY};
+            p2 = {-sY + this->position.x + offsetX, sX + -this->position.y + offsetY};
+            p3 = {sY + this->position.x + offsetX, -sX + -this->position.y + offsetY};
+            p4 = {-sY + this->position.x + offsetX, -sX + -this->position.y + offsetY};
 
             points.push_front(p1);
             points.push_front(p2);

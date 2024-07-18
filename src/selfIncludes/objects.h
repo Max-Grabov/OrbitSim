@@ -9,7 +9,7 @@ typedef struct vector {
     int x, y, z;
 }vector;
 
-typedef struct vectord{
+typedef struct vectord {
     double x, y, z;
 }vectord;
 
