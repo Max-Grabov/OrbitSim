@@ -1,9 +1,12 @@
-#include <iostream>
-#include <vector>
-#include <SDL2/SDL.h>
-#include <objects.h>
-#include <sphere.h>
+// On Windows compile with:
+// g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
 
+#include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_test_font.h>
+#include <SelfIncludes/objects.h>
+#include <SelfIncludes/sphere.h>
+#include <SelfIncludes/textRenderer.h>
 
 const int w = 1300, h = 800;
 
@@ -13,7 +16,11 @@ const int offsetY = h/2;
 
 const double frame = 0.01;
 
+int cameraOffx = 0;
+int cameraOffy = 0;
+
 bool c = false;
+bool on = true;
 
 Sphere *s1 = new Sphere(100, 2000000000000000000);
 Sphere *s2 = new Sphere(25, 2000000000000);
@@ -22,22 +29,23 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int 
 
 int main(int argc, char *argv[]){
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_ALLOW_HIGHDPI);
+
+    SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
+
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    int cameraOffx = 0;
-    int cameraOffy = 0;
+    TextRenderer *textRenderer = new TextRenderer(renderer);
 
     if(!window){
         std::cout << "Error creating window" << SDL_GetError() << std::endl;
         return 1;
     }
+
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
-    bool on = true;
     SDL_Event event;
 
     while(on){
@@ -53,6 +61,13 @@ int main(int argc, char *argv[]){
                 {
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
                     SDL_RenderClear(renderer);
+
+                    c = false;
+
+                    cameraOffx = 0;
+                    cameraOffy = 0;
+
+                    //textRenderer->render(renderer, "3141592653589", w/2, h/2);
                     break;
                 }
                 case SDL_SCANCODE_I:
@@ -103,6 +118,7 @@ int main(int argc, char *argv[]){
         if(keyState[SDL_SCANCODE_LEFT]){
             cameraOffx -= 5;
         }
+
         SDL_RenderPresent(renderer);
     }
     SDL_DestroyWindow(window);
@@ -142,7 +158,6 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int 
         theta = M_PI/2;
     }
 
-
     double FxG = -cos(theta) * forceG;
     double FyG = -sin(theta) * forceG;
 
@@ -161,8 +176,8 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int 
     s2->velocity.x = s2->velocity.x + s2->acceleration.x * frame;
     s2->velocity.y = s2->velocity.y + s2->acceleration.y * frame;
 
-    std::cout << (s2->position.x) << " " << (s2->position.y) << std::endl;
-    std::cout << theta << " angle" << std::endl;
+    // std::cout << (s2->position.x) << " " << (s2->position.y) << std::endl;
+    // std::cout << theta << " angle" << std::endl;
 
     SDL_Delay(100);
 
