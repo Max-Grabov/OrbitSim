@@ -1,33 +1,19 @@
 // On Windows compile with:
 // g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
 
-#include <iostream>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_test_font.h>
-#include <SelfIncludes/objects.h>
-#include <SelfIncludes/sphere.h>
-#include <SelfIncludes/textRenderer.h>
-
-const int w = 1300, h = 800;
-
-//Used to achieve coordinate system on the window centered on the center of the screen (0,0) = Center instead of (w/2, h/2)
-const int offsetX = w/2;
-const int offsetY = h/2;
-
-const double frame = 0.01;
-
-int cameraOffx = 0;
-int cameraOffy = 0;
-
-bool c = false;
-bool on = true;
+#include <SelfIncludes/init.h>
+#include <SelfIncludes/textInput.h>
 
 Sphere *s1 = new Sphere(100, 2000000000000000000);
 Sphere *s2 = new Sphere(25, 2000000000000);
 
-void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy);
-
 int main(int argc, char *argv[]){
+    int cameraOffx = 0;
+    int cameraOffy = 0;
+
+    bool c = false;
+    bool on = true;
+
     SDL_Init(SDL_INIT_EVERYTHING);
 
     SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
@@ -35,6 +21,17 @@ int main(int argc, char *argv[]){
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     TextRenderer *textRenderer = new TextRenderer(renderer);
+
+    std::vector<TextInput*> inputs;
+
+    TextInput *massObject1 = new TextInput();
+    TextInput *massObject2 = new TextInput();
+
+    inputs.push_back(massObject1);
+    inputs.push_back(massObject2);
+
+    massObject1->setBorder(oneInputMass);
+    massObject2->setBorder(twoInputMass);
 
     if(!window){
         std::cout << "Error creating window" << SDL_GetError() << std::endl;
@@ -48,6 +45,11 @@ int main(int argc, char *argv[]){
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
     SDL_Event event;
 
+    //Setup hotbar for inputting data
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    initHotbar(renderer, textRenderer, inputs);
+
     while(on){
         while(SDL_PollEvent(&event)){
             switch(event.type){
@@ -57,6 +59,8 @@ int main(int argc, char *argv[]){
 
             case SDL_KEYDOWN:
                 switch(event.key.keysym.scancode){
+
+                //Clear the field and offsets
                 case SDL_SCANCODE_C:
                 {
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -67,9 +71,10 @@ int main(int argc, char *argv[]){
                     cameraOffx = 0;
                     cameraOffy = 0;
 
-                    //textRenderer->render(renderer, "3141592653589", w/2, h/2);
                     break;
                 }
+
+                //Initialize the setup
                 case SDL_SCANCODE_I:
                 {
                     s1->position.x = 0;
@@ -87,6 +92,8 @@ int main(int argc, char *argv[]){
 
                     break;
                 }
+
+                //Kill the program
                 case SDL_SCANCODE_ESCAPE:
                 {
                     on = false;
@@ -103,9 +110,10 @@ int main(int argc, char *argv[]){
             }
         }
         if(c){
-            update(s1, s2, renderer, cameraOffx, cameraOffy);
+            update(s1, s2, renderer, textRenderer, inputs, cameraOffx, cameraOffy);
         }
 
+        //Add camera movement to simulate "infinite space"
         if(keyState[SDL_SCANCODE_UP]){
             cameraOffy -= 5;
         }
@@ -119,6 +127,7 @@ int main(int argc, char *argv[]){
             cameraOffx -= 5;
         }
 
+        checkKeyStateType(keyState, textRenderer, renderer, inputs);
         SDL_RenderPresent(renderer);
     }
     SDL_DestroyWindow(window);
@@ -127,13 +136,20 @@ int main(int argc, char *argv[]){
     return EXIT_SUCCESS;
 }
 
-//So far one body problem (big sphere is immobile)
-void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy){
+void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs,
+            int cameraOffx, int cameraOffy){
+
+    //Fill the rectangle every fram with white, effectively clearing this portion of the screen
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, &Screen);
+
+    //Setup math
     double rad = s1->distance(*s1, *s2) - s1->radius - s2->radius;
 
     double forceG = (G * s2->mass * s1->mass)/(pow(rad, 2));
     double forceC = (s2->mass * sqrt(pow(s2->velocity.x, 2) + pow(s2->velocity.y, 2)))/(rad);
 
+    //Use theta from -pi to pi
     double theta = (s2->position.x == s1->position.x) ?
                     (M_PI/2) :
                     atan((s2->position.y - s1->position.y)/(1.0*(s2->position.x - s1->position.x)));
@@ -158,6 +174,7 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int 
         theta = M_PI/2;
     }
 
+    //Kinematics
     double FxG = -cos(theta) * forceG;
     double FyG = -sin(theta) * forceG;
 
@@ -176,14 +193,80 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int 
     s2->velocity.x = s2->velocity.x + s2->acceleration.x * frame;
     s2->velocity.y = s2->velocity.y + s2->acceleration.y * frame;
 
-    // std::cout << (s2->position.x) << " " << (s2->position.y) << std::endl;
-    // std::cout << theta << " angle" << std::endl;
-
     SDL_Delay(100);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
-
+    //Draw the new positions
     s1->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
     s2->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
+
+    //Temp hotbar
+    refreshHotbar(renderer, &Hotbar);
+    initHotbar(renderer, tRenderer, inputs);
+}
+
+void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
+    tRenderer->render(renderer, "1", 10, 20);
+    tRenderer->render(renderer, "2", 10, 50);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, 0, hotbarH, 2*w, hotbarH);
+
+    for(auto const &i : inputs){
+        i->init(renderer);
+        tRenderer->render(renderer, i->currentText, i->border.x + 1, i->border.y + 1);
+    }
+}
+
+void refreshHotbar(SDL_Renderer *renderer, SDL_Rect *Hotbar){
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(renderer, Hotbar);
+}
+
+void checkKeyStateType(const Uint8 *keyState, TextRenderer *tRenderer, SDL_Renderer *renderer, std::vector<TextInput*> inputs){
+    char *c = (char*)malloc(sizeof(char));
+    if(keyState[SDL_SCANCODE_BACKSPACE]){
+
+    }
+    if(keyState[SDL_SCANCODE_0]){
+        *c = '0';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_1]){
+        *c = '1';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_2]){
+        *c = '2';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_3]){
+        *c = '3';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_4]){
+        *c = '4';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_5]){
+        *c = '5';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_6]){
+        *c = '6';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_7]){
+        *c = '7';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_8]){
+        *c = '8';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    if(keyState[SDL_SCANCODE_9]){
+        *c = '9';
+        inputs.at(0)->type(tRenderer, renderer, c);
+    }
+    free(c);
 }

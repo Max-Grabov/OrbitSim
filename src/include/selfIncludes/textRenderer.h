@@ -2,6 +2,8 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+#ifndef TREND_H_
+#define TREND_H_
 //8 , 49 start, 11 interval, y end 64
 class TextRenderer {
 public:
@@ -45,10 +47,11 @@ public:
     }
 
     void clearRender(){
-
+        //TODO
     }
 
     ~TextRenderer(){
         SDL_DestroyTexture(texture);
     }
 };
+#endif
