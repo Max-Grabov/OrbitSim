@@ -33,6 +33,9 @@ int main(int argc, char *argv[]){
     massObject1->setBorder(oneInputMass);
     massObject2->setBorder(twoInputMass);
 
+    //Text input character
+    char *ch = (char*)malloc(sizeof(char));
+
     if(!window){
         std::cout << "Error creating window" << SDL_GetError() << std::endl;
         return 1;
@@ -52,6 +55,7 @@ int main(int argc, char *argv[]){
 
     while(on){
         while(SDL_PollEvent(&event)){
+
             switch(event.type){
             case SDL_QUIT:
                 on = false;
@@ -100,6 +104,81 @@ int main(int argc, char *argv[]){
                     break;
                 }
 
+                //Checking typing information
+                case SDL_SCANCODE_0:
+                {
+                    *ch = '0';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_1:
+                {
+                    *ch = '1';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_2:
+                {
+                    *ch = '2';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_3:
+                {
+                    *ch = '3';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_4:
+                {
+                    *ch = '4';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_5:
+                {
+                    *ch = '5';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_6:
+                {
+                    *ch = '6';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_7:
+                {
+                    *ch = '7';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_8:
+                {
+                    *ch = '8';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_9:
+                {
+                    *ch = '9';
+                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    break;
+                }
+
+                case SDL_SCANCODE_BACKSPACE:
+                {
+                    inputs.at(0)->deleteChar(textRenderer, renderer);
+                }
                 default:
                     break;
                 }
@@ -127,9 +206,9 @@ int main(int argc, char *argv[]){
             cameraOffx -= 5;
         }
 
-        checkKeyStateType(keyState, textRenderer, renderer, inputs);
         SDL_RenderPresent(renderer);
     }
+    free(ch);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
@@ -198,10 +277,6 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRende
     //Draw the new positions
     s1->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
     s2->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
-
-    //Temp hotbar
-    refreshHotbar(renderer, &Hotbar);
-    initHotbar(renderer, tRenderer, inputs);
 }
 
 void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
@@ -214,59 +289,5 @@ void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<Tex
 
     for(auto const &i : inputs){
         i->init(renderer);
-        tRenderer->render(renderer, i->currentText, i->border.x + 1, i->border.y + 1);
     }
-}
-
-void refreshHotbar(SDL_Renderer *renderer, SDL_Rect *Hotbar){
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(renderer, Hotbar);
-}
-
-void checkKeyStateType(const Uint8 *keyState, TextRenderer *tRenderer, SDL_Renderer *renderer, std::vector<TextInput*> inputs){
-    char *c = (char*)malloc(sizeof(char));
-    if(keyState[SDL_SCANCODE_BACKSPACE]){
-
-    }
-    if(keyState[SDL_SCANCODE_0]){
-        *c = '0';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_1]){
-        *c = '1';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_2]){
-        *c = '2';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_3]){
-        *c = '3';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_4]){
-        *c = '4';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_5]){
-        *c = '5';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_6]){
-        *c = '6';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_7]){
-        *c = '7';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_8]){
-        *c = '8';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    if(keyState[SDL_SCANCODE_9]){
-        *c = '9';
-        inputs.at(0)->type(tRenderer, renderer, c);
-    }
-    free(c);
 }
