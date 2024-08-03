@@ -46,8 +46,11 @@ public:
         }
     }
 
-    void clearRender(){
-        //TODO
+    void clearRender(SDL_Renderer *renderer, int x, int y){
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        SDL_Rect del = {x, y, 12, 16};
+        SDL_RenderDrawRect(renderer, &del);
+        SDL_RenderFillRect(renderer, &del);
     }
 
     ~TextRenderer(){

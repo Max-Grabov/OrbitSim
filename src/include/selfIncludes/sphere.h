@@ -4,6 +4,9 @@
 #include <math.h>
 #include <list>
 
+//Used to not add points that are in the hotbar space on the window
+#define HOTBAR_H 100
+
 //Too lazy to rename to circle
 class Sphere : public Object {
 public:
@@ -32,10 +35,18 @@ public:
         SDL_Point p3 = {this->position.x + offsetX, -this->position.y + offsetY - radius};
         SDL_Point p4 = {this->position.x + offsetX - radius, -this->position.y + offsetY};
 
-        points.push_front(p1);
-        points.push_front(p2);
-        points.push_front(p3);
-        points.push_front(p4);
+        if(-this->position.y + offsetY >= HOTBAR_H){
+            points.push_front(p1);
+            points.push_front(p4);
+        }
+
+        if(-this->position.y + offsetY + radius >= HOTBAR_H){
+            points.push_front(p2);
+        }
+
+        if(-this->position.y + offsetY - radius >= HOTBAR_H){
+            points.push_front(p3);
+        }
 
         while(sX > sY){
             sY++;
@@ -57,20 +68,32 @@ public:
             p3 = {sX + this->position.x + offsetX, -sY + -this->position.y + offsetY};
             p4 = {-sX + this->position.x + offsetX, -sY + -this->position.y + offsetY};
 
-            points.push_front(p1);
-            points.push_front(p2);
-            points.push_front(p3);
-            points.push_front(p4);
+            if(sY + -this->position.y + offsetY >= HOTBAR_H){
+                points.push_front(p1);
+                points.push_front(p2);
+            }
+
+            if(-sY + -this->position.y + offsetY >= HOTBAR_H){
+                points.push_front(p3);
+                points.push_front(p4);
+            }
+
 
             p1 = {sY + this->position.x + offsetX, sX + -this->position.y + offsetY};
             p2 = {-sY + this->position.x + offsetX, sX + -this->position.y + offsetY};
             p3 = {sY + this->position.x + offsetX, -sX + -this->position.y + offsetY};
             p4 = {-sY + this->position.x + offsetX, -sX + -this->position.y + offsetY};
 
-            points.push_front(p1);
-            points.push_front(p2);
-            points.push_front(p3);
-            points.push_front(p4);
+            if(sX + -this->position.y + offsetY >= HOTBAR_H){
+                points.push_front(p1);
+                points.push_front(p2);
+            }
+
+            if(-sX + -this->position.y + offsetY >= HOTBAR_H){
+                points.push_front(p3);
+                points.push_front(p4);
+            }
+
         }
 
         int l = points.size();

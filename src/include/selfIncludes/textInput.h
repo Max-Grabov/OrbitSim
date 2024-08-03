@@ -37,14 +37,24 @@ public:
     }
 
     void type(TextRenderer *tRenderer, SDL_Renderer *renderer, char *c){
-        int currXPixel = this->border.x + 11*(this->currentText.length());
+        int currXPixel = 1 + this->border.x + 11*(this->currentText.length());
 
         if(this->currentText.length() > 10){
             return;
         }
 
         this->currentText.push_back(*c);
-        tRenderer->render(renderer, (std::string)c, currXPixel, this->border.y);
+        tRenderer->render(renderer, (std::string)c, currXPixel, this->border.y + 1);
+    }
+
+    void deleteChar(TextRenderer *tRenderer, SDL_Renderer *renderer){
+        if(this->currentText.length() == 0){
+            return;
+        }
+
+        this->currentText.pop_back();
+        int newXPixel = this->border.x + 11*(this->currentText.length());
+        tRenderer->clearRender(renderer, newXPixel, this->border.y + 1);
     }
 
 };
