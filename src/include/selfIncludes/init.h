@@ -27,9 +27,6 @@ SDL_Rect twoInputMass = {30, 50, 100, 19};
 
 void update(Sphere*, Sphere*, SDL_Renderer*, TextRenderer*, std::vector<TextInput*>, int, int);
 
-void refreshHotbar(SDL_Renderer*, SDL_Rect*);
-
 void initHotbar(SDL_Renderer*, TextRenderer*, std::vector<TextInput*>);
 
-void checkKeyStateType(const Uint8*, TextRenderer*, SDL_Renderer*, std::vector<TextInput*>);
 #endif
