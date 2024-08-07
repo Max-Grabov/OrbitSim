@@ -5,11 +5,13 @@
 #ifndef TIN_H_
 #define TIN_H_
 
+#define BORDER_OFFSET 1
 class TextInput {
-public:
+private:
     std::string currentText;
     SDL_Rect border;
 
+public:
     TextInput(){
         this->currentText = "";
         this->border = {0, 0, 0, 0};
@@ -37,14 +39,14 @@ public:
     }
 
     void type(TextRenderer *tRenderer, SDL_Renderer *renderer, char *c){
-        int currXPixel = 1 + this->border.x + 11*(this->currentText.length());
+        int currXPixel = BORDER_OFFSET + this->border.x + 11*(this->currentText.length());
 
         if(this->currentText.length() > 10){
             return;
         }
 
         this->currentText.push_back(*c);
-        tRenderer->render(renderer, (std::string)c, currXPixel, this->border.y + 1);
+        tRenderer->render(renderer, (std::string)c, currXPixel, this->border.y + BORDER_OFFSET);
     }
 
     void deleteChar(TextRenderer *tRenderer, SDL_Renderer *renderer){
@@ -54,7 +56,7 @@ public:
 
         this->currentText.pop_back();
         int newXPixel = this->border.x + 11*(this->currentText.length());
-        tRenderer->clearRender(renderer, newXPixel, this->border.y + 1);
+        tRenderer->clearRender(renderer, newXPixel, this->border.y + BORDER_OFFSET);
     }
 
 };
