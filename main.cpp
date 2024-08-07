@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
                 case SDL_SCANCODE_C:
                 {
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                    SDL_RenderClear(renderer);
+                    SDL_RenderFillRect(renderer, &Screen);
 
                     c = false;
 
@@ -82,18 +82,30 @@ int main(int argc, char *argv[]){
                 case SDL_SCANCODE_I:
                 {
                     s1->position.x = 0;
-                    s1->position.y = 0;
+                    s1->position.y = 0 + HOTBAR_H;
 
                     s2->position.x = 206;
-                    s2->position.y = 206;
+                    s2->position.y = 206 + HOTBAR_H;
 
                     s2->setVelocity({900, -900, 0});
 
-                    s1->Draw(renderer, offsetX, offsetY);
-                    s2->Draw(renderer, offsetX, offsetY);
+                    s1->Draw(renderer, OFFSET_X, OFFSET_Y);
+                    s2->Draw(renderer, OFFSET_X, OFFSET_Y);
 
                     c = true;
 
+                    break;
+                }
+
+                case SDL_SCANCODE_A:
+                {
+                    std::string oneChange = inputs.at(0)->getText();
+
+                    if(oneChange == ""){
+                        break;
+                    }
+
+                    s1->mass = 1000*std::stod(oneChange, nullptr);
                     break;
                 }
 
@@ -266,26 +278,26 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRende
     s2->acceleration.x = FnX/s2->mass;
     s2->acceleration.y = FnY/s2->mass;
 
-    s2->position.x = 0.5 * s2->acceleration.x * frame * frame + s2->velocity.x * frame + s2->position.x;
-    s2->position.y = 0.5 * s2->acceleration.y * frame * frame + s2->velocity.y * frame + s2->position.y;
+    s2->position.x = 0.5 * s2->acceleration.x * FRAME * FRAME + s2->velocity.x * FRAME + s2->position.x;
+    s2->position.y = 0.5 * s2->acceleration.y * FRAME * FRAME + s2->velocity.y * FRAME + s2->position.y;
 
-    s2->velocity.x = s2->velocity.x + s2->acceleration.x * frame;
-    s2->velocity.y = s2->velocity.y + s2->acceleration.y * frame;
+    s2->velocity.x = s2->velocity.x + s2->acceleration.x * FRAME;
+    s2->velocity.y = s2->velocity.y + s2->acceleration.y * FRAME;
 
     SDL_Delay(100);
 
     //Draw the new positions
-    s1->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
-    s2->Draw(renderer, offsetX + cameraOffx, offsetY + cameraOffy);
+    s1->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
+    s2->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
 }
 
 void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
-    tRenderer->render(renderer, "1", 10, 20);
-    tRenderer->render(renderer, "2", 10, 50);
+    tRenderer->render(renderer, "One", 10, 20);
+    tRenderer->render(renderer, "Two", 10, 50);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    SDL_RenderDrawLine(renderer, 0, hotbarH, 2*w, hotbarH);
+    SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2*w, HOTBAR_H);
 
     for(auto const &i : inputs){
         i->init(renderer);
