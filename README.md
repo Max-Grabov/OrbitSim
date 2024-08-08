@@ -8,7 +8,7 @@ g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
 ToDo
 - [ ] Add menu system to choose different simulations
 - [ ] Actually make different simulations
-- [ ] Set up typing restriction for when mouse is in correct region
-- [ ] Use user input to alter current object values
+- [x] Set up typing restriction Changeable with a key
+- [x] Use user input to alter current object values
 - [ ] Make it look pretty (yeah...)
 - [ ] Complete standard header
