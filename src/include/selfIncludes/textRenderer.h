@@ -19,7 +19,7 @@
 //Lower and upper case x values, There is an extra integer to account for Z in the rendering function without having if checks
 const int lowerLetterX[] = {8, 19, 30, 41, 52, 63, 71, 82, 93, 97, 108, 117, 122, 133, 144, 155, 165, 176, 187, 198, 205, 216, 227, 238, 248, 259, 269};
 const int upperLetterX[] = {8, 19, 30, 41, 52, 63, 74, 84, 95, 102, 113, 124, 135, 145, 156, 167, 178, 189, 200, 210, 221, 232, 242, 253, 264, 275, 286};
-//8 , 49 start, 11 interval, y end 64
+
 class TextRenderer {
 public:
 
@@ -47,8 +47,8 @@ public:
                 //Get destination source, using specified x and y coordinates (starting from top left corner)
                 this->dest.x = x + currX;
                 this->dest.y = y;
-                this->dest.w = NUM_WIDTH + 1;
-                this->dest.h = NUM_HEIGHT + 1;
+                this->dest.w = NUM_WIDTH;
+                this->dest.h = NUM_HEIGHT;
             }
 
             else if(c >= 'a' && c <= 'z'){
@@ -59,8 +59,8 @@ public:
 
                 this->dest.x = x + currX;
                 this->dest.y = y;
-                this->dest.w = this->source.w + 1;
-                this->dest.h = this->source.h + 1;
+                this->dest.w = this->source.w;
+                this->dest.h = this->source.h;
             }
 
             else if(c >= 'A' && c <= 'Z'){
@@ -71,10 +71,22 @@ public:
 
                 this->dest.x = x + currX;
                 this->dest.y = y;
-                this->dest.w = this->source.w + 1;
-                this->dest.h = this->source.h + 1;
+                this->dest.w = this->source.w;
+                this->dest.h = this->source.h;
             }
 
+            else if(c == ' '){
+                //This is a blank spot on the map
+                this->source.x = lowerLetterX[26] + 3;
+                this->source.y = LOWER_CASE_STARTY;
+                this->source.w = NUM_WIDTH;
+                this->source.h = LOWER_CASE_HEIGHT;
+
+                this->dest.x = x + currX;
+                this->dest.y = y;
+                this->dest.w = this->source.w;
+                this->dest.h = this->source.h;
+            }
             currX += this->source.w;
             SDL_RenderCopy(renderer, this->texture, &this->source, &dest);
         }
@@ -82,7 +94,7 @@ public:
 
     void clearRender(SDL_Renderer *renderer, int x, int y){
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        SDL_Rect del = {x, y, 12, 16};
+        SDL_Rect del = {x + 1, y, NUM_WIDTH + 1, NUM_HEIGHT + 1};
         SDL_RenderDrawRect(renderer, &del);
         SDL_RenderFillRect(renderer, &del);
     }

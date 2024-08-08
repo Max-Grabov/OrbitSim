@@ -6,6 +6,8 @@
 #define TIN_H_
 
 #define BORDER_OFFSET 1
+
+#define LIMIT 8
 class TextInput {
 private:
     std::string currentText;
@@ -41,7 +43,7 @@ public:
     void type(TextRenderer *tRenderer, SDL_Renderer *renderer, char *c){
         int currXPixel = BORDER_OFFSET + this->border.x + 11*(this->currentText.length());
 
-        if(this->currentText.length() > 10){
+        if(this->currentText.length() >= LIMIT){
             return;
         }
 
@@ -55,7 +57,7 @@ public:
         }
 
         this->currentText.pop_back();
-        int newXPixel = this->border.x + 11*(this->currentText.length());
+        int newXPixel = this->border.x + NUM_WIDTH*(this->currentText.length());
         tRenderer->clearRender(renderer, newXPixel, this->border.y + BORDER_OFFSET);
     }
 

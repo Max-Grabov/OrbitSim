@@ -11,12 +11,14 @@ int main(int argc, char *argv[]){
     int cameraOffx = 0;
     int cameraOffy = 0;
 
+    int tabCycle = 0;
+
     bool c = false;
     bool on = true;
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
-    SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
+    SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -24,14 +26,7 @@ int main(int argc, char *argv[]){
 
     std::vector<TextInput*> inputs;
 
-    TextInput *massObject1 = new TextInput();
-    TextInput *massObject2 = new TextInput();
-
-    inputs.push_back(massObject1);
-    inputs.push_back(massObject2);
-
-    massObject1->setBorder(oneInputMass);
-    massObject2->setBorder(twoInputMass);
+    inputs = initTextBox();
 
     //Text input character
     char *ch = (char*)malloc(sizeof(char));
@@ -64,20 +59,6 @@ int main(int argc, char *argv[]){
             case SDL_KEYDOWN:
                 switch(event.key.keysym.scancode){
 
-                //Clear the field and offsets
-                case SDL_SCANCODE_C:
-                {
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                    SDL_RenderFillRect(renderer, &Screen);
-
-                    c = false;
-
-                    cameraOffx = 0;
-                    cameraOffy = 0;
-
-                    break;
-                }
-
                 //Initialize the setup
                 case SDL_SCANCODE_I:
                 {
@@ -93,10 +74,50 @@ int main(int argc, char *argv[]){
                     s2->Draw(renderer, OFFSET_X, OFFSET_Y);
 
                     c = true;
+                    break;
+                }
+
+                //Kill the program
+                case SDL_SCANCODE_ESCAPE:
+                {
+                    on = false;
+                    break;
+                }
+
+                //Clear the field and offsets
+                case SDL_SCANCODE_C:
+                {
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                    SDL_RenderFillRect(renderer, &Screen);
+
+                    c = false;
+
+                    cameraOffx = 0;
+                    cameraOffy = 0;
 
                     break;
                 }
 
+                case SDL_SCANCODE_TAB:
+                {
+                    //Clear last line
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
+                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
+                       inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
+                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+
+                    tabCycle = (tabCycle + 1) % 4;
+
+                    //Add new line
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
+                                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
+                                       inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
+                                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+                    break;
+                }
+                //Take in the text input PLACEHOLDER
                 case SDL_SCANCODE_A:
                 {
                     std::string oneChange = inputs.at(0)->getText();
@@ -109,87 +130,80 @@ int main(int argc, char *argv[]){
                     break;
                 }
 
-                //Kill the program
-                case SDL_SCANCODE_ESCAPE:
-                {
-                    on = false;
-                    break;
-                }
-
                 //Checking typing information
                 case SDL_SCANCODE_0:
                 {
                     *ch = '0';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_1:
                 {
                     *ch = '1';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_2:
                 {
                     *ch = '2';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_3:
                 {
                     *ch = '3';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_4:
                 {
                     *ch = '4';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_5:
                 {
                     *ch = '5';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_6:
                 {
                     *ch = '6';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_7:
                 {
                     *ch = '7';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_8:
                 {
                     *ch = '8';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_9:
                 {
                     *ch = '9';
-                    inputs.at(0)->type(textRenderer, renderer, ch);
+                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
                     break;
                 }
 
                 case SDL_SCANCODE_BACKSPACE:
                 {
-                    inputs.at(0)->deleteChar(textRenderer, renderer);
+                    inputs.at(tabCycle)->deleteChar(textRenderer, renderer);
                 }
                 default:
                     break;
@@ -292,14 +306,42 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRende
 }
 
 void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
-    tRenderer->render(renderer, "One", 10, 20);
-    tRenderer->render(renderer, "Two", 10, 50);
+    tRenderer->render(renderer, "One Mass", 10, 20);
+    tRenderer->render(renderer, "Two Mass", 10, 60);
+
+    tRenderer->render(renderer, "One Velocity", 210, 20);
+    tRenderer->render(renderer, "Two Velocity", 210, 60);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
-    SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2*w, HOTBAR_H);
+    SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2*SCREEN_WIDTH, HOTBAR_H);
+
+    SDL_RenderDrawLine(renderer, inputs.at(0)->getBorder().x,
+                       inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3,
+                       inputs.at(0)->getBorder().x + inputs.at(0)->getBorder().w,
+                       inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3);
 
     for(auto const &i : inputs){
         i->init(renderer);
     }
+}
+
+std::vector<TextInput*> initTextBox(){
+    std::vector<TextInput*> inputs;
+    TextInput *massObject1 = new TextInput();
+    TextInput *massObject2 = new TextInput();
+    TextInput *velObject1 = new TextInput();
+    TextInput *velObject2 = new TextInput();
+
+    inputs.push_back(massObject1);
+    inputs.push_back(massObject2);
+    inputs.push_back(velObject1);
+    inputs.push_back(velObject2);
+
+    massObject1->setBorder(oneInputMass);
+    massObject2->setBorder(twoInputMass);
+    velObject1->setBorder(oneInputVel);
+    velObject2->setBorder(twoInputVel);
+
+    return inputs;
 }
