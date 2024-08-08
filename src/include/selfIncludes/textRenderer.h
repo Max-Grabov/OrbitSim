@@ -18,7 +18,7 @@
 
 //Lower and upper case x values, There is an extra integer to account for Z in the rendering function without having if checks
 const int lowerLetterX[] = {8, 19, 30, 41, 52, 63, 71, 82, 93, 97, 108, 117, 122, 133, 144, 155, 165, 176, 187, 198, 205, 216, 227, 238, 248, 259, 269};
-const int upperLetterX[] = {8, 19, 30, 41, 52, 63, 74, 84, 95, 102, 113, 124, 135, 145, 156, 167, 178, 189, 200, 210, 221, 232, 242, 253, 264, 275, 286};
+const int upperLetterX[] = {8, 19, 30, 41, 52, 63, 74, 84, 95, 102, 113, 124, 135, 145, 156, 167, 178, 189, 200, 210, 220, 232, 242, 253, 264, 275, 286};
 const int         numX[] = {9, 20, 30, 41, 52, 63, 73, 84, 95, 106, 116};
 
 class TextRenderer {
@@ -65,6 +65,27 @@ public:
                 this->source.x = lowerLetterX[26] + 3;
                 this->source.y = LOWER_CASE_STARTY;
                 this->source.w = NUM_WIDTH;
+                this->source.h = LOWER_CASE_HEIGHT;
+            }
+
+            else if(c == '('){
+                this->source.x = 131;
+                this->source.y = NUM_STARTY;
+                this->source.w = 9;
+                this->source.h = NUM_HEIGHT;
+            }
+
+            else if(c == ')'){
+                this->source.x = 183;
+                this->source.y = NUM_STARTY;
+                this->source.w = 9;
+                this->source.h = NUM_HEIGHT;
+            }
+
+            else if(c == '/'){
+                this->source.x = 287;
+                this->source.y = LOWER_CASE_STARTY;
+                this->source.w = 9;
                 this->source.h = LOWER_CASE_HEIGHT;
             }
             this->dest.x = x + currX;
