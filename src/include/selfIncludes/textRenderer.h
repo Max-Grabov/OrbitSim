@@ -19,7 +19,8 @@
 //Lower and upper case x values, There is an extra integer to account for Z in the rendering function without having if checks
 const int lowerLetterX[] = {8, 19, 30, 41, 52, 63, 71, 82, 93, 97, 108, 117, 122, 133, 144, 155, 165, 176, 187, 198, 205, 216, 227, 238, 248, 259, 269};
 const int upperLetterX[] = {8, 19, 30, 41, 52, 63, 74, 84, 95, 102, 113, 124, 135, 145, 156, 167, 178, 189, 200, 210, 221, 232, 242, 253, 264, 275, 286};
-const int numX[] = {9, 20, 30, 41, 52, 63, 73, 84, 95, 106, 116};
+const int         numX[] = {9, 20, 30, 41, 52, 63, 73, 84, 95, 106, 116};
+
 class TextRenderer {
 public:
 
@@ -41,7 +42,7 @@ public:
                 //Get character source from map
                 this->source.x = numX[c - '0'];
                 this->source.y = NUM_STARTY;
-                this->source.w = numX[c - 'a' + 1] - numX[c - 'a'];
+                this->source.w = numX[c - '0' + 1] - numX[c - '0'];
                 this->source.h = NUM_HEIGHT;
             }
 
