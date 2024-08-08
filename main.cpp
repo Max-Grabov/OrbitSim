@@ -16,6 +16,9 @@ int main(int argc, char *argv[]){
     bool c = false;
     bool on = true;
 
+    vectord v;
+    std::string oneChange;
+
     SDL_Init(SDL_INIT_EVERYTHING);
 
     SDL_Window *window = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
@@ -120,13 +123,29 @@ int main(int argc, char *argv[]){
                 //Take in the text input PLACEHOLDER
                 case SDL_SCANCODE_A:
                 {
-                    std::string oneChange = inputs.at(0)->getText();
+                    oneChange = inputs.at(tabCycle)->getText();
 
                     if(oneChange == ""){
                         break;
                     }
 
-                    s1->mass = 1000*std::stod(oneChange, nullptr);
+                    switch(tabCycle){
+                    case 0:
+                        s1->mass = 1000000000000*std::stod(oneChange, nullptr);
+                        break;
+                    case 1:
+                        s2->mass = 1000000000*std::stod(oneChange, nullptr);
+                        break;
+
+                    case 2:
+                        v = {std::stod(oneChange, nullptr), s2->velocity.y, 0};
+                        s2->setVelocity(v);
+                        break;
+
+                    case 3:
+                        v = {s2->velocity.x, std::stod(oneChange, nullptr), 0};
+                        s2->setVelocity(v);
+                    }
                     break;
                 }
 
@@ -306,11 +325,11 @@ void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRende
 }
 
 void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
-    tRenderer->render(renderer, "One Mass", 10, 20);
-    tRenderer->render(renderer, "Two Mass", 10, 60);
+    tRenderer->render(renderer, "Mass One(Tg)", 10, 20);
+    tRenderer->render(renderer, "Mass Two(Gg)", 10, 60);
 
-    tRenderer->render(renderer, "One Velocity", 210, 20);
-    tRenderer->render(renderer, "Two Velocity", 210, 60);
+    tRenderer->render(renderer, "Velocity Two X(m/s)", 245, 20);
+    tRenderer->render(renderer, "Velocity Two Y(m/s)", 245, 60);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
