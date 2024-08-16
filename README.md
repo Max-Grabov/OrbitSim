@@ -1,6 +1,7 @@
 # graphicsTest
 2D object simulator, currently contains 1 Body motion.
-Built entirely with SDL2
+
+Built entirely with SDL2 and cmake
 
 To compile:
 g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
