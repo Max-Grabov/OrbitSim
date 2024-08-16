@@ -6,8 +6,8 @@
 #define TIN_H_
 
 #define BORDER_OFFSET 1
-
 #define LIMIT 8
+
 class TextInput {
 private:
     std::string currentText;

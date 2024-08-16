@@ -2,10 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <SDL2/SDL.h>
-#include <SelfIncludes/sphere.h>
-#include <SelfIncludes/textRenderer.h>
-#include <SelfIncludes/objects.h>
-#include <selfIncludes/textInput.h>
 
 #ifndef INIT_H_
 #define INIT_H_
@@ -29,11 +25,5 @@ SDL_Rect twoInputMass = {139, 59, 100, 19};
 SDL_Rect oneInputVel = {433, 19, 100, 19};
 
 SDL_Rect twoInputVel = {433, 59, 100, 19};
-
-void update(Sphere*, Sphere*, SDL_Renderer*, TextRenderer*, std::vector<TextInput*>, int, int);
-
-void initHotbar(SDL_Renderer*, TextRenderer*, std::vector<TextInput*>);
-
-std::vector<TextInput*> initTextBox();
 
 #endif

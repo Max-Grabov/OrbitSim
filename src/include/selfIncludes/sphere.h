@@ -7,6 +7,9 @@
 //Used to not add points that are in the hotbar space on the window
 #define HOTBAR_H 100
 
+#ifndef _SPHERE_
+#define _SPHERE_
+
 //Too lazy to rename to circle
 class Sphere : public Object {
 public:
@@ -111,3 +114,5 @@ public:
         free(p);
     }
 };
+
+#endif
