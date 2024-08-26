@@ -60,6 +60,5 @@ public:
         int newXPixel = this->border.x + NUM_WIDTH*(this->currentText.length());
         tRenderer->clearRender(renderer, newXPixel, this->border.y + BORDER_OFFSET);
     }
-
 };
 #endif

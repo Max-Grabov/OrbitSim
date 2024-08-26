@@ -2,25 +2,27 @@
 // g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
 #include <SelfIncludes/objects.h>
 #include <SelfIncludes/sphere.h>
-#include <SelfIncludes/OneBody.h>
+#include <SelfIncludes/oneBody.h>
+#include <SelfIncludes/menu.h>
 #include <SelfIncludes/textRenderer.h>
 #include <SelfIncludes/textInput.h>
 #include <SelfIncludes/init.h>
+#include <SDL2/SDL.h>
 
-Sphere *s1 = new Sphere(100, 2000000000000000000);
-Sphere *s2 = new Sphere(25,  2000000000000);
+Sphere *s1 = new Sphere(100, BIG_MASS);
+Sphere *s2 = new Sphere(25,  SMALL_MASS);
 
 int main(int argc, char *argv[]){
     int cameraOffx = 0;
     int cameraOffy = 0;
 
     int tabCycle = 0;
+    int currScreen = 0;
+    int selectedScreen = 1;
 
+    bool onMenu = true;
     bool c = false;
     bool on = true;
-
-    vectord v;
-    std::string oneChange;
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -32,9 +34,6 @@ int main(int argc, char *argv[]){
 
     std::vector<TextInput*> inputs;
 
-    inputs = OneBody::initTextBox();
-
-    //Text input character
     char *ch = (char*)malloc(sizeof(char));
 
     if(!window){
@@ -46,222 +45,64 @@ int main(int argc, char *argv[]){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
+    Menu::loadMenu(renderer, textRenderer);
+
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
     SDL_Event event;
 
-    //Setup hotbar for inputting data
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-    OneBody::initHotbar(renderer, textRenderer, inputs);
-
     while(on){
         while(SDL_PollEvent(&event)){
+            if(currScreen == 0){
+                switch(event.type){
+                    case SDL_KEYDOWN:
+                    switch(event.key.keysym.scancode){
+                        case SDL_SCANCODE_ESCAPE:
+                        {
+                            on = false;
+                            break;
+                            //Add visual indicator
+                        }
 
-            switch(event.type){
-            case SDL_QUIT:
-                on = false;
-                break;
+                        case SDL_SCANCODE_TAB:
+                        {
+                            selectedScreen = (selectedScreen + 1) % SCREENS;
+                            if(selectedScreen == 0) selectedScreen++;
 
-            case SDL_KEYDOWN:
-                switch(event.key.keysym.scancode){
+                            break;
+                            //Add visual indicator
+                        }
 
-                //Initialize the setup
-                case SDL_SCANCODE_I:
-                {
-                    s1->position.x = 0;
-                    s1->position.y = 0 + HOTBAR_H;
+                        case SDL_SCANCODE_S:
+                        {
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                            SDL_RenderClear(renderer);
 
-                    s2->position.x = 206;
-                    s2->position.y = 206 + HOTBAR_H;
-
-                    s2->setVelocity({inputs.at(2)->getText() == "" ?
-                                    900 : std::stod(inputs.at(2)->getText(), nullptr),
-                                    inputs.at(3)->getText() == "" ?
-                                    -900 : std::stod(inputs.at(3)->getText(), nullptr),
-                                    0});
-
-                    s1->Draw(renderer, OFFSET_X, OFFSET_Y);
-                    s2->Draw(renderer, OFFSET_X, OFFSET_Y);
-
-                    c = true;
-                    break;
-                }
-
-                //Kill the program
-                case SDL_SCANCODE_ESCAPE:
-                {
-                    on = false;
-                    break;
-                }
-
-                //Clear the field and offsets
-                case SDL_SCANCODE_C:
-                {
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                    SDL_RenderFillRect(renderer, &Screen);
-
-                    c = false;
-
-                    cameraOffx = 0;
-                    cameraOffy = 0;
-
-                    break;
-                }
-
-                case SDL_SCANCODE_TAB:
-                {
-                    //Clear last line
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
-                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
-                       inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
-                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
-
-                    tabCycle = (tabCycle + 1) % 4;
-
-                    //Add new line
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-                    SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
-                                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
-                                       inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
-                                       inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
-                    break;
-                }
-                //Take in the text input PLACEHOLDER
-                case SDL_SCANCODE_A:
-                {
-                    oneChange = inputs.at(tabCycle)->getText();
-
-                    if(oneChange == ""){
-                        break;
+                            currScreen = selectedScreen;
+                            switch(currScreen){
+                            case 1:
+                                inputs = OneBody::initTextBox();
+                                OneBody::initHotbar(renderer, textRenderer, inputs);
+                                OneBody::init(inputs, renderer, s1, s2);
+                            }
+                        }
                     }
-
-                    switch(tabCycle){
-                    case 0:
-                        s1->mass = 1000000000000*std::stod(oneChange, nullptr);
-                        break;
-                    case 1:
-                        s2->mass = 1000000000*std::stod(oneChange, nullptr);
-                        break;
-
-                    case 2:
-                        v = {std::stod(oneChange, nullptr), s2->velocity.y, 0};
-                        s2->setVelocity(v);
-                        break;
-
-                    case 3:
-                        v = {s2->velocity.x, std::stod(oneChange, nullptr), 0};
-                        s2->setVelocity(v);
-                    }
-                    break;
                 }
-
-                //Checking typing information
-                case SDL_SCANCODE_0:
-                {
-                    *ch = '0';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_1:
-                {
-                    *ch = '1';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_2:
-                {
-                    *ch = '2';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_3:
-                {
-                    *ch = '3';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_4:
-                {
-                    *ch = '4';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_5:
-                {
-                    *ch = '5';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_6:
-                {
-                    *ch = '6';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_7:
-                {
-                    *ch = '7';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_8:
-                {
-                    *ch = '8';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_9:
-                {
-                    *ch = '9';
-                    inputs.at(tabCycle)->type(textRenderer, renderer, ch);
-                    break;
-                }
-
-                case SDL_SCANCODE_BACKSPACE:
-                {
-                    inputs.at(tabCycle)->deleteChar(textRenderer, renderer);
-                }
-                default:
-                    break;
-                }
-                break;
-
-            default:
-                break;
             }
-        }
-        if(c){
-            OneBody::update(s1, s2, renderer, textRenderer, inputs, cameraOffx, cameraOffy);
-        }
+            else if(currScreen == 1){
+                currScreen = OneBody::update(ch, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs, s1, s2);
+            }
 
-        //Add camera movement to simulate "infinite space"
-        if(keyState[SDL_SCANCODE_UP]){
-            cameraOffy -= 5;
         }
-        if(keyState[SDL_SCANCODE_DOWN]){
-            cameraOffy += 5;
+        switch(currScreen){
+        case 1:
+        {
+            OneBody::calc(s1, s2, renderer, textRenderer, inputs, cameraOffx, cameraOffy);
         }
-        if(keyState[SDL_SCANCODE_RIGHT]){
-            cameraOffx += 5;
         }
-        if(keyState[SDL_SCANCODE_LEFT]){
-            cameraOffx -= 5;
-        }
-
         SDL_RenderPresent(renderer);
     }
-    free(ch);
     SDL_DestroyWindow(window);
+    free(ch);
     SDL_Quit();
 
     return EXIT_SUCCESS;
