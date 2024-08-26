@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SelfIncludes/menu.h>
 #include <SelfIncludes/init.h>
 #include <SelfIncludes/objects.h>
 #include <SelfIncludes/sphere.h>
@@ -8,9 +9,11 @@
 #ifndef _ONE_BODY_
 #define _ONE_BODY_
 
+int tabCycle = 0;
+
 class OneBody {
 public:
-    static void update(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs,
+    static void calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs,
                 int cameraOffx, int cameraOffy){
 
         //Fill the rectangle every fram with white, effectively clearing this portion of the screen
@@ -114,6 +117,197 @@ public:
 
         return inputs;
     }
+
+    static void init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
+        s1->position.x = 0;
+        s1->position.y = 0 + HOTBAR_H;
+
+        s2->position.x = 206;
+        s2->position.y = 206 + HOTBAR_H;
+
+        s2->setVelocity({inputs.at(2)->getText() == "" ?
+                        900 : std::stod(inputs.at(2)->getText(), nullptr),
+                        inputs.at(3)->getText() == "" ?
+                        -900 : std::stod(inputs.at(3)->getText(), nullptr),
+                        0});
+
+        s1->Draw(renderer, OFFSET_X, OFFSET_Y);
+        s2->Draw(renderer, OFFSET_X, OFFSET_Y);
+
+        SDL_RenderPresent(renderer);
+    }
+
+    static void reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy){
+        s1->mass = BIG_MASS;
+        s2->mass = SMALL_MASS;
+        *tabCycle = 0;
+        *cameraOffx = *cameraOffy = 0;
+    }
+
+    static int update(char *ch, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2){
+        vectord v;
+        std::string oneChange;
+
+        switch(e.type){
+            case SDL_KEYDOWN:
+            switch(e.key.keysym.scancode){
+            case SDL_SCANCODE_ESCAPE:
+            {
+                reset(s1, s2, &tabCycle, cameraOffx, cameraOffy);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                SDL_RenderClear(renderer);
+
+                Menu::loadMenu(renderer, tRenderer);
+                return 0;
+            }
+
+            case SDL_SCANCODE_TAB:
+            {
+                //Clear last line
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
+                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
+                    inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
+                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+
+                tabCycle = (tabCycle + 1) % 4;
+
+                //Add new line
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
+                                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
+                                    inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
+                                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+                break;
+            }
+
+            case SDL_SCANCODE_A:
+            {
+                oneChange = inputs.at(tabCycle)->getText();
+
+                if(oneChange == ""){
+                    break;
+                }
+
+                switch(tabCycle){
+                case 0:
+                    s1->mass = 1000000000000*std::stod(oneChange, nullptr);
+                    break;
+                case 1:
+                    s2->mass = 1000000000*std::stod(oneChange, nullptr);
+                    break;
+
+                case 2:
+                    v = {std::stod(oneChange, nullptr), s2->velocity.y, 0};
+                    s2->setVelocity(v);
+                    break;
+
+                case 3:
+                    v = {s2->velocity.x, std::stod(oneChange, nullptr), 0};
+                    s2->setVelocity(v);
+                }
+                break;
+            }
+
+            case SDL_SCANCODE_0:
+            {
+                *ch = '0';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_1:
+            {
+                *ch = '1';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_2:
+            {
+                *ch = '2';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_3:
+            {
+                *ch = '3';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_4:
+            {
+                *ch = '4';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_5:
+            {
+                *ch = '5';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_6:
+            {
+                *ch = '6';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_7:
+            {
+                *ch = '7';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_8:
+            {
+                *ch = '8';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_9:
+            {
+                *ch = '9';
+                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                break;
+            }
+
+            case SDL_SCANCODE_BACKSPACE:
+            {
+                inputs.at(tabCycle)->deleteChar(tRenderer, renderer);
+                break;
+            }
+
+            default:
+                break;
+            }
+
+            if(keyState[SDL_SCANCODE_UP]){
+                *cameraOffy -= 5;
+            }
+            if(keyState[SDL_SCANCODE_DOWN]){
+                *cameraOffy += 5;
+            }
+            if(keyState[SDL_SCANCODE_RIGHT]){
+                *cameraOffx += 5;
+            }
+            if(keyState[SDL_SCANCODE_LEFT]){
+                *cameraOffx -= 5;
+            }
+            return 1;
+
+            default: return 1;
+        }
+
+    }
+
 };
 
 #endif
