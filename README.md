@@ -1,4 +1,4 @@
-# graphicsTest
+# OrbitSim
 2D object simulator, currently contains 1 Body motion.
 
 Built entirely with SDL2 and cmake
