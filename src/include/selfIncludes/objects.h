@@ -21,16 +21,9 @@ public:
     Object(){
         this->position = {0, 0, 0};
     }
-    Object(vector position){
-        this->position = position;
-    }
 
-    void setVelocity(vectord velocity){
-        this->velocity = velocity;
-    }
-
-    void setAcceleration(vectord acceleration){
-        this->acceleration = acceleration;
+    void setVelocity(vectord v){
+        this->velocity = v;
     }
 
     static double distance(Object obj1, Object obj2){

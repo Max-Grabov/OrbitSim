@@ -3,20 +3,19 @@
 #include <SelfIncludes/objects.h>
 #include <SelfIncludes/sphere.h>
 #include <SelfIncludes/oneBody.h>
+#include <SelfIncludes/TwoBody.h>
 #include <SelfIncludes/menu.h>
 #include <SelfIncludes/textRenderer.h>
 #include <SelfIncludes/textInput.h>
 #include <SelfIncludes/init.h>
 #include <SDL2/SDL.h>
 
-Sphere *s1 = new Sphere(100, BIG_MASS);
-Sphere *s2 = new Sphere(25,  SMALL_MASS);
-
 int main(int argc, char *argv[]){
     int cameraOffx = 0;
     int cameraOffy = 0;
 
-    int tabCycle = 0;
+    int *tabCycle = (int*)malloc(sizeof(int));
+    *tabCycle = 0;
     int currScreen = 0;
     int selectedScreen = 1;
 
@@ -32,7 +31,11 @@ int main(int argc, char *argv[]){
 
     TextRenderer *textRenderer = new TextRenderer(renderer);
 
-    std::vector<TextInput*> inputs;
+    Sphere *s1 = new Sphere(1, BIG_MASS);
+    Sphere *s2 = new Sphere(1,  SMALL_MASS);
+
+    std::vector<TextInput*> inputs1;
+    std::vector<TextInput*> inputs2;
 
     char *ch = (char*)malloc(sizeof(char));
 
@@ -46,6 +49,11 @@ int main(int argc, char *argv[]){
     SDL_RenderClear(renderer);
 
     Menu::loadMenu(renderer, textRenderer);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
+                                 Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
+
 
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
     SDL_Event event;
@@ -65,8 +73,15 @@ int main(int argc, char *argv[]){
 
                         case SDL_SCANCODE_TAB:
                         {
-                            selectedScreen = (selectedScreen + 1) % SCREENS;
-                            if(selectedScreen == 0) selectedScreen++;
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+                            SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
+                                                         Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
+
+                            selectedScreen = (selectedScreen + 1) % (SCREENS);
+
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                            SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
+                                                         Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
 
                             break;
                             //Add visual indicator
@@ -77,32 +92,47 @@ int main(int argc, char *argv[]){
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
                             SDL_RenderClear(renderer);
 
-                            currScreen = selectedScreen;
+                            currScreen = selectedScreen + 1;
                             switch(currScreen){
                             case 1:
-                                inputs = OneBody::initTextBox();
-                                OneBody::initHotbar(renderer, textRenderer, inputs);
-                                OneBody::init(inputs, renderer, s1, s2);
+                                inputs1 = OneBody::initTextBox();
+                                OneBody::initHotbar(renderer, textRenderer, inputs1);
+                                OneBody::init(inputs1, renderer, s1, s2);
+                                break;
+                            case 2:
+                                inputs1 = TwoBody::initTextBox();
+                                TwoBody::initHotbar(renderer, textRenderer, inputs1);
+                                TwoBody::init(inputs1, renderer, s1, s2);
+                                break;
                             }
                         }
                     }
                 }
             }
             else if(currScreen == 1){
-                currScreen = OneBody::update(ch, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs, s1, s2);
+                currScreen = OneBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs1, s1, s2);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             }
-
+            else if(currScreen == 2){
+                //currScreen =
+            }
         }
         switch(currScreen){
         case 1:
         {
-            OneBody::calc(s1, s2, renderer, textRenderer, inputs, cameraOffx, cameraOffy);
+            OneBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
+            break;
+        }
+        case 2:
+        {
+            //TwoBody::calc()
         }
         }
         SDL_RenderPresent(renderer);
     }
     SDL_DestroyWindow(window);
     free(ch);
+    free(tabCycle);
     SDL_Quit();
 
     return EXIT_SUCCESS;

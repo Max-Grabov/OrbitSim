@@ -13,8 +13,7 @@ int tabCycle = 0;
 
 class OneBody {
 public:
-    static void calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs,
-                int cameraOffx, int cameraOffy){
+    static void calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy){
 
         //Fill the rectangle every fram with white, effectively clearing this portion of the screen
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -119,6 +118,9 @@ public:
     }
 
     static void init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
+        s1->radius = 100;
+        s2->radius = 25;
+
         s1->position.x = 0;
         s1->position.y = 0 + HOTBAR_H;
 
@@ -144,7 +146,7 @@ public:
         *cameraOffx = *cameraOffy = 0;
     }
 
-    static int update(char *ch, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2){
+    static int update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2){
         vectord v;
         std::string oneChange;
 
@@ -153,7 +155,7 @@ public:
             switch(e.key.keysym.scancode){
             case SDL_SCANCODE_ESCAPE:
             {
-                reset(s1, s2, &tabCycle, cameraOffx, cameraOffy);
+                reset(s1, s2, tabCycle, cameraOffx, cameraOffy);
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
                 SDL_RenderClear(renderer);
 
@@ -165,31 +167,31 @@ public:
             {
                 //Clear last line
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
-                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
-                    inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
-                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+                SDL_RenderDrawLine(renderer, inputs.at(*tabCycle)->getBorder().x,
+                    inputs.at(*tabCycle)->getBorder().y + + inputs.at(*tabCycle)->getBorder().h + 3,
+                    inputs.at(*tabCycle)->getBorder().x + inputs.at(*tabCycle)->getBorder().w,
+                    inputs.at(*tabCycle)->getBorder().y + + inputs.at(*tabCycle)->getBorder().h + 3);
 
-                tabCycle = (tabCycle + 1) % 4;
+                *tabCycle = (*tabCycle + 1) % 4;
 
                 //Add new line
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawLine(renderer, inputs.at(tabCycle)->getBorder().x,
-                                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3,
-                                    inputs.at(tabCycle)->getBorder().x + inputs.at(tabCycle)->getBorder().w,
-                                    inputs.at(tabCycle)->getBorder().y + + inputs.at(tabCycle)->getBorder().h + 3);
+                SDL_RenderDrawLine(renderer, inputs.at(*tabCycle)->getBorder().x,
+                                    inputs.at(*tabCycle)->getBorder().y + + inputs.at(*tabCycle)->getBorder().h + 3,
+                                    inputs.at(*tabCycle)->getBorder().x + inputs.at(*tabCycle)->getBorder().w,
+                                    inputs.at(*tabCycle)->getBorder().y + + inputs.at(*tabCycle)->getBorder().h + 3);
                 break;
             }
 
             case SDL_SCANCODE_A:
             {
-                oneChange = inputs.at(tabCycle)->getText();
+                oneChange = inputs.at(*tabCycle)->getText();
 
                 if(oneChange == ""){
                     break;
                 }
 
-                switch(tabCycle){
+                switch(*tabCycle){
                 case 0:
                     s1->mass = 1000000000000*std::stod(oneChange, nullptr);
                     break;
@@ -212,76 +214,76 @@ public:
             case SDL_SCANCODE_0:
             {
                 *ch = '0';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_1:
             {
                 *ch = '1';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_2:
             {
                 *ch = '2';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_3:
             {
                 *ch = '3';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_4:
             {
                 *ch = '4';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_5:
             {
                 *ch = '5';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_6:
             {
                 *ch = '6';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_7:
             {
                 *ch = '7';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_8:
             {
                 *ch = '8';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_9:
             {
                 *ch = '9';
-                inputs.at(tabCycle)->type(tRenderer, renderer, ch);
+                inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
                 break;
             }
 
             case SDL_SCANCODE_BACKSPACE:
             {
-                inputs.at(tabCycle)->deleteChar(tRenderer, renderer);
+                inputs.at(*tabCycle)->deleteChar(tRenderer, renderer);
                 break;
             }
 
@@ -305,9 +307,7 @@ public:
 
             default: return 1;
         }
-
     }
-
 };
 
 #endif
