@@ -50,9 +50,9 @@ int main(int argc, char *argv[]){
 
     Menu::loadMenu(renderer, textRenderer);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
-                                 Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, Options[0].x, Options[0].y + 210,
+                                 Options[0].x + 200, Options[0].y + 210);
 
 
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
@@ -74,14 +74,14 @@ int main(int argc, char *argv[]){
                         case SDL_SCANCODE_TAB:
                         {
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-                            SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
-                                                         Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
+                            SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
+                                                         Options[(selectedScreen + 1) % 2].x + 200, Options[(selectedScreen + 1) % 2].y + 210);
 
                             selectedScreen = (selectedScreen + 1) % (SCREENS);
 
                             SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-                            SDL_RenderDrawLine(renderer, Options[selectedScreen].x, Options[selectedScreen].y + 210,
-                                                         Options[selectedScreen].x + 200, Options[selectedScreen].y + 210);
+                            SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
+                                                         Options[(selectedScreen + 1) % 2].x + 200, Options[(selectedScreen + 1) % 2].y + 210);
 
                             break;
                             //Add visual indicator
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
                             SDL_RenderClear(renderer);
 
-                            currScreen = selectedScreen + 1;
+                            currScreen = selectedScreen;
                             switch(currScreen){
                             case 1:
                                 inputs1 = OneBody::initTextBox();
