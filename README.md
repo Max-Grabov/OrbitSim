@@ -9,8 +9,18 @@ Options in the simulator include:
 ## Compiling and Running
 ```bash
 git clone https://github.com/Max-Grabov/OrbitSim.git
-# In the destination of the clone, use this line to compile
-g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
+# In the destination of the clone, either do
+make
+
+# OR
+
+mingw32-make
+
+# Depending on your version. Alternatively:
+
+g++ g++ -I src/resources/include -L src/lib -o main main.cpp src/resources/source/menu.cpp src/resources/source/objects.cpp src/resources/source/oneBody.cpp src/resources/source/sphere.cpp src/resources/source/textInput.cpp src/resources/source/textRenderer.cpp src/resources/source/init.cpp -lmingw32 -lSDL2main -lSDL2
+
+# Then run it
 ./main
 ```
 ## Contributions
