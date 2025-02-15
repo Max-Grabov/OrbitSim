@@ -1,14 +1,14 @@
 // On Windows compile with:
-// g++ -I src/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
-#include <SelfIncludes/objects.h>
-#include <SelfIncludes/sphere.h>
-#include <SelfIncludes/oneBody.h>
-#include <SelfIncludes/TwoBody.h>
-#include <SelfIncludes/menu.h>
-#include <SelfIncludes/textRenderer.h>
-#include <SelfIncludes/textInput.h>
-#include <SelfIncludes/init.h>
-#include <SDL2/SDL.h>
+// g++ -I src/resources/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main -lSDL2
+#include "src/resources/include/objects.h"
+#include "src/resources/include/sphere.h"
+#include "src/resources/include/oneBody.h"
+#include "src/resources/include/TwoBody.h"
+#include "src/resources/include/menu.h"
+#include "src/resources/include/textRenderer.h"
+#include "src/resources/include/textInput.h"
+#include "src/resources/include/init.h"
+#include "src/resources/SDL2/SDL.h"
 
 int main(int argc, char *argv[]){
     int cameraOffx = 0;
