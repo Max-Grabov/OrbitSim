@@ -18,7 +18,7 @@ mingw32-make
 
 # Depending on your version. Alternatively:
 
-g++ g++ -I src/resources/include -L src/lib -o main main.cpp src/resources/source/menu.cpp src/resources/source/objects.cpp src/resources/source/oneBody.cpp src/resources/source/sphere.cpp src/resources/source/textInput.cpp src/resources/source/textRenderer.cpp src/resources/source/init.cpp -lmingw32 -lSDL2main -lSDL2
+g++ -I src/resources/include -L src/lib -o main main.cpp src/resources/source/menu.cpp src/resources/source/objects.cpp src/resources/source/oneBody.cpp src/resources/source/sphere.cpp src/resources/source/textInput.cpp src/resources/source/textRenderer.cpp src/resources/source/init.cpp -lmingw32 -lSDL2main -lSDL2
 
 # Then run it
 ./main
