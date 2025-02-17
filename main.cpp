@@ -22,6 +22,7 @@ int main(int argc, char *argv[]){
     bool onMenu = true;
     bool c = false;
     bool on = true;
+    bool pause = false;
 
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -32,7 +33,7 @@ int main(int argc, char *argv[]){
     TextRenderer *textRenderer = new TextRenderer(renderer);
 
     Sphere *s1 = new Sphere(1, BIG_MASS);
-    Sphere *s2 = new Sphere(1,  SMALL_MASS);
+    Sphere *s2 = new Sphere(1, SMALL_MASS);
 
     std::vector<TextInput*> inputs1;
     std::vector<TextInput*> inputs2;
@@ -60,6 +61,8 @@ int main(int argc, char *argv[]){
 
     while(on){
         while(SDL_PollEvent(&event)){
+
+            //Used to keep track of what screen we are on
             if(currScreen == 0){
                 switch(event.type){
                     case SDL_KEYDOWN:
@@ -77,7 +80,11 @@ int main(int argc, char *argv[]){
                             SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
                                                          Options[(selectedScreen + 1) % 2].x + 200, Options[(selectedScreen + 1) % 2].y + 210);
 
-                            selectedScreen = (selectedScreen + 1) % (SCREENS);
+                            selectedScreen = ((selectedScreen + 1) % (SCREENS));
+
+                            if(!selectedScreen){
+                                selectedScreen++;
+                            }
 
                             SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
                             SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
@@ -87,6 +94,7 @@ int main(int argc, char *argv[]){
                             //Add visual indicator
                         }
 
+                        //Actually go to what the selected screen is, and init the sim
                         case SDL_SCANCODE_S:
                         {
                             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -100,32 +108,54 @@ int main(int argc, char *argv[]){
                                 OneBody::init(inputs1, renderer, s1, s2);
                                 break;
                             case 2:
-                                inputs1 = TwoBody::initTextBox();
-                                TwoBody::initHotbar(renderer, textRenderer, inputs1);
-                                TwoBody::init(inputs1, renderer, s1, s2);
+                                inputs2 = TwoBody::initTextBox();
+                                TwoBody::initHotbar(renderer, textRenderer, inputs2);
+                                TwoBody::init(inputs2, renderer, s1, s2);
                                 break;
                             }
                         }
                     }
                 }
             }
+
+            //If not on the menu, do the sim's method continuously
             else if(currScreen == 1){
-                currScreen = OneBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs1, s1, s2);
+                currScreen = OneBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs1, s1, s2, &pause);
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+                if(!currScreen){
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
+                                                 Options[(selectedScreen + 1) % 2].x + 200, Options[(selectedScreen + 1) % 2].y + 210);
+                }
             }
             else if(currScreen == 2){
-                //currScreen =
+                currScreen = TwoBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy, renderer, textRenderer, inputs2, s1, s2);
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+                if(!currScreen){
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+                    SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x, Options[(selectedScreen + 1) % 2].y + 210,
+                                                 Options[(selectedScreen + 1) % 2].x + 200, Options[(selectedScreen + 1) % 2].y + 210);
+                }
             }
         }
+
+        // Now update our calcs
         switch(currScreen){
         case 1:
         {
+            if(pause){
+                continue;
+            }
+
             OneBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
             break;
         }
         case 2:
         {
-            //TwoBody::calc()
+            TwoBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
+            break;
         }
         }
         SDL_RenderPresent(renderer);

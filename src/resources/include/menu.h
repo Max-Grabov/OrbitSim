@@ -1,9 +1,9 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <../SDL2/SDL.h>
-#include <init.h>
-#include <textRenderer.h>
+#include "../SDL2/SDL.h"
+#include "init.h"
+#include "textRenderer.h"
 
 class Menu {
 public:

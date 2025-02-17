@@ -1,7 +1,7 @@
 #ifndef TREND_H_
 #define TREND_H_
 
-#include <../SDL2/SDL.h>
+#include "../SDL2/SDL.h"
 #include <string>
 
 #define LOWER_CASE_STARTY 6

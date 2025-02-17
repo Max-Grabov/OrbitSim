@@ -15,3 +15,7 @@ SDL_Rect twoInputMass = {139, 59, 100, 19};
 SDL_Rect oneInputVel = {433, 19, 100, 19};
 
 SDL_Rect twoInputVel = {433, 59, 100, 19};
+
+SDL_Rect threeInputVel = {726, 19, 100, 19};
+
+SDL_Rect fourInputVel = {726, 59, 100, 19};

@@ -1,4 +1,5 @@
 #include "../include/textRenderer.h"
+#include <iostream>
 
 TextRenderer::TextRenderer(SDL_Renderer *renderer){
     SDL_Surface *surface = SDL_LoadBMP("src/resources/include/font.bmp");
@@ -9,6 +10,10 @@ TextRenderer::TextRenderer(SDL_Renderer *renderer){
 
 void TextRenderer::render(SDL_Renderer *renderer, std::string input, int x, int y){
     int currX = 0;
+
+    //Debugger
+    //std::cout << input << std::endl;
+
     for(auto c : input){
         if(c >= '0' && c <= '9'){
             //Get character source from map

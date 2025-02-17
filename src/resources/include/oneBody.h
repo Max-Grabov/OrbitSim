@@ -1,13 +1,13 @@
 #ifndef _ONE_BODY_
 #define _ONE_BODY_
 
-#include <../SDL2/SDL.h>
-#include <menu.h>
-#include <init.h>
-#include <objects.h>
-#include <sphere.h>
-#include <textRenderer.h>
-#include <textInput.h>
+#include "../SDL2/SDL.h"
+#include "menu.h"
+#include "init.h"
+#include "objects.h"
+#include "sphere.h"
+#include "textRenderer.h"
+#include "textInput.h"
 
 class OneBody {
 public:
@@ -21,7 +21,12 @@ public:
 
     static void reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy);
 
-    static int update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2);
+    static int update(char *ch, int *tabCycle,
+                    const Uint8 *keyState, SDL_Event e,
+                    int *cameraOffx, int *cameraOffy,
+                    SDL_Renderer *renderer, TextRenderer
+                    *tRenderer, std::vector <TextInput*> inputs,
+                    Sphere *s1, Sphere *s2, bool *pause);
 };
 
 #endif

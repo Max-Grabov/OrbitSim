@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define G 0.000000000066741
+#define G 6.67430e-11
 #define gn = 9.80665
 
 typedef struct vector {

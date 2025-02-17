@@ -3,7 +3,7 @@
 
 #include <string>
 #include <../SDL2/SDL.h>
-#include <textRenderer.h>
+#include "textRenderer.h"
 
 #define BORDER_OFFSET 1
 #define LIMIT 8

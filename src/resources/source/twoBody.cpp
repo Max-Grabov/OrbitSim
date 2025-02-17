@@ -1,8 +1,85 @@
-#include "../include/oneBody.h"
+#include "../include/TwoBody.h"
 
-void OneBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy){
+void TwoBody::init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
+    s1->radius = 60;
+    s2->radius = 40;
 
-    //Fill the rectangle every frame with white, effectively clearing this portion of the screen
+    s1->position.x = 200;
+    s1->position.y = 0 + HOTBAR_H;
+
+    s2->position.x = -200;
+    s2->position.y =  + HOTBAR_H;
+
+    s2->velocity = {inputs.at(2)->getText() == "" ?
+                    100 : std::stod(inputs.at(2)->getText(), nullptr),
+                    inputs.at(3)->getText() == "" ?
+                    600 : std::stod(inputs.at(3)->getText(), nullptr),
+                    100};
+
+    s1->velocity = {inputs.at(2)->getText() == "" ?
+                    -100 : std::stod(inputs.at(2)->getText(), nullptr),
+                    inputs.at(3)->getText() == "" ?
+                    -600 : std::stod(inputs.at(3)->getText(), nullptr),
+                    0};
+
+
+    s1->Draw(renderer, OFFSET_X, OFFSET_Y);
+    s2->Draw(renderer, OFFSET_X, OFFSET_Y);
+
+    SDL_RenderPresent(renderer);
+}
+
+void TwoBody::initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
+    tRenderer->render(renderer, "Mass One(Tg)", 10, 20);
+    tRenderer->render(renderer, "Mass Two(Gg)", 10, 60);
+
+    tRenderer->render(renderer, "Velocity One X(m/s)", 245, 20);
+    tRenderer->render(renderer, "Velocity One Y(m/s)", 245, 60);
+
+    tRenderer->render(renderer, "Velocity Two X(m/s)", 538, 20);
+    tRenderer->render(renderer, "Velocity Two Y(m/s)", 538, 60);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2*SCREEN_WIDTH, HOTBAR_H);
+
+    SDL_RenderDrawLine(renderer, inputs.at(0)->getBorder().x,
+                       inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3,
+                       inputs.at(0)->getBorder().x + inputs.at(0)->getBorder().w,
+                       inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3);
+
+    for(auto const &i : inputs){
+        i->init(renderer);
+    }
+}
+
+std::vector<TextInput*> TwoBody::initTextBox(){
+    std::vector<TextInput*> inputs;
+    TextInput *massObject1 = new TextInput();
+    TextInput *massObject2 = new TextInput();
+    TextInput *velObject1 = new TextInput();
+    TextInput *velObject2 = new TextInput();
+    TextInput *velObject3 = new TextInput();
+    TextInput *velObject4 = new TextInput();
+
+    inputs.push_back(massObject1);
+    inputs.push_back(massObject2);
+    inputs.push_back(velObject1);
+    inputs.push_back(velObject2);
+    inputs.push_back(velObject3);
+    inputs.push_back(velObject4);
+
+    massObject1->setBorder(oneInputMass);
+    massObject2->setBorder(twoInputMass);
+    velObject1->setBorder(oneInputVel);
+    velObject2->setBorder(twoInputVel);
+    velObject3->setBorder(threeInputVel);
+    velObject4->setBorder(fourInputVel);
+
+    return inputs;
+}
+
+void TwoBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &Screen);
 
@@ -20,7 +97,6 @@ void OneBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOff
         theta = (s2->position.y > s1->position.y) ? M_PI/2 : -M_PI/2;
     }
     else {
-        //So OP
         theta = atan2(1.0*(s2->position.y - s1->position.y), 1.0*(s2->position.x - s1->position.x));
     }
 
@@ -33,7 +109,9 @@ void OneBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOff
     s2->position.x += 0.5 * PIXELCONVERT * s2->acceleration.x * FRAME * FRAME + s2->velocity.x * FRAME;
     s2->position.y += 0.5 * PIXELCONVERT * s2->acceleration.y * FRAME * FRAME + s2->velocity.y * FRAME;
 
-    // For error correction
+    s1->position.x += 0.5 * PIXELCONVERT * s1->acceleration.x * FRAME * FRAME + s1->velocity.x * FRAME;
+    s1->position.y += 0.5 * PIXELCONVERT * s1->acceleration.y * FRAME * FRAME + s1->velocity.y * FRAME;
+
     double newTheta = atan2(s2->position.y - s1->position.y, s2->position.x - s1->position.x);
 
     double newRad = Object::distance(*s1, *s2) - s1->radius - s2->radius;
@@ -45,91 +123,45 @@ void OneBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOff
     double newAccelx = newFXG / s2->mass;
     double newAccely = newFYG / s2->mass;
 
-    //Try to counteract error cummulation via looking at next accel
+    double newAccelx2 = -newFXG / s2->mass;
+    double newAccely2 = -newFYG / s2->mass;
+
     s2->velocity.x += 0.5 * (s2->acceleration.x + newAccelx) * FRAME;
     s2->velocity.y += 0.5 * (s2->acceleration.y + newAccely) * FRAME;
+
+    s1->velocity.x += 0.5 * (s2->acceleration.x + newAccelx2) * FRAME;
+    s1->velocity.y += 0.5 * (s2->acceleration.y + newAccely2) * FRAME;
 
     s2->acceleration.x = newAccelx;
     s2->acceleration.y = newAccely;
 
+    s1->acceleration.x = -newAccelx;
+    s1->acceleration.y = -newAccely;
+
     SDL_Delay(100);
+
+    //std::cout << "pos 1 " << s1->position.x << " " << s1->position.y << std::endl;
+    //std::cout << "pos 2 " << s2->position.x << " " << s2->position.y << std::endl;
 
     //Draw the new positions
     s1->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
     s2->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
 }
 
-void OneBody::initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs){
-    tRenderer->render(renderer, "Mass One(Tg)", 10, 20);
-    tRenderer->render(renderer, "Mass Two(Gg)", 10, 60);
-
-    tRenderer->render(renderer, "Velocity Two X(m/s)", 245, 20);
-    tRenderer->render(renderer, "Velocity Two Y(m/s)", 245, 60);
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-    SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2*SCREEN_WIDTH, HOTBAR_H);
-
-    SDL_RenderDrawLine(renderer, inputs.at(0)->getBorder().x,
-                        inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3,
-                        inputs.at(0)->getBorder().x + inputs.at(0)->getBorder().w,
-                        inputs.at(0)->getBorder().y + + inputs.at(0)->getBorder().h + 3);
-
-    for(auto const &i : inputs){
-        i->init(renderer);
-    }
-}
-
-std::vector<TextInput*> OneBody::initTextBox(){
-    std::vector<TextInput*> inputs;
-    TextInput *massObject1 = new TextInput();
-    TextInput *massObject2 = new TextInput();
-    TextInput *velObject1 = new TextInput();
-    TextInput *velObject2 = new TextInput();
-
-    inputs.push_back(massObject1);
-    inputs.push_back(massObject2);
-    inputs.push_back(velObject1);
-    inputs.push_back(velObject2);
-
-    massObject1->setBorder(oneInputMass);
-    massObject2->setBorder(twoInputMass);
-    velObject1->setBorder(oneInputVel);
-    velObject2->setBorder(twoInputVel);
-
-    return inputs;
-}
-
-void OneBody::init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
-    s1->radius = 100;
-    s2->radius = 25;
-
-    s1->position.x = 0;
-    s1->position.y = 0 + HOTBAR_H;
-
-    s2->position.x = 212;
-    s2->position.y = 212 + HOTBAR_H;
-
-    s2->setVelocity({inputs.at(2)->getText() == "" ?
-                    900 : std::stod(inputs.at(2)->getText(), nullptr),
-                    inputs.at(3)->getText() == "" ?
-                    -900 : std::stod(inputs.at(3)->getText(), nullptr),
-                    0});
-
-    s1->Draw(renderer, OFFSET_X, OFFSET_Y);
-    s2->Draw(renderer, OFFSET_X, OFFSET_Y);
-
-    SDL_RenderPresent(renderer);
-}
-
-void OneBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy){
+void TwoBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy){
     s1->mass = BIG_MASS;
     s2->mass = SMALL_MASS;
     *tabCycle = 0;
     *cameraOffx = *cameraOffy = 0;
 }
 
-int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2, bool *pause){
+int TwoBody::update(char *ch, int *tabCycle,
+    const Uint8 *keyState, SDL_Event e,
+    int *cameraOffx, int *cameraOffy,
+    SDL_Renderer *renderer, TextRenderer *tRenderer,
+    std::vector <TextInput*> inputs,
+    Sphere *s1, Sphere *s2){
+
     vectord v;
     std::string oneChange;
 
@@ -155,7 +187,7 @@ int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e,
                 inputs.at(*tabCycle)->getBorder().x + inputs.at(*tabCycle)->getBorder().w,
                 inputs.at(*tabCycle)->getBorder().y + + inputs.at(*tabCycle)->getBorder().h + 3);
 
-            *tabCycle = (*tabCycle + 1) % 4;
+            *tabCycle = (*tabCycle + 1) % 6;
 
             //Add new line
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -193,11 +225,11 @@ int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e,
             break;
         }
 
-        case SDL_SCANCODE_P:
-        {
-            *pause = !*pause;
-            break;
-        }
+        // case SDL_SCANCODE_P:
+        // {
+        //     *pause = !*pause;
+        //     break;
+        // }
 
         case SDL_SCANCODE_0:
         {
@@ -291,8 +323,8 @@ int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e,
         if(keyState[SDL_SCANCODE_LEFT]){
             *cameraOffx -= 5;
         }
-        return 1;
+        return 2;
 
-        default: return 1;
+        default: return 2;
     }
 }
