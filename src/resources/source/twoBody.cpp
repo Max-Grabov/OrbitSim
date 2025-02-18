@@ -1,25 +1,27 @@
 #include "../include/TwoBody.h"
 
 void TwoBody::init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
+
+    //Init stats
     s1->radius = 60;
     s2->radius = 40;
 
     s1->position.x = 200;
-    s1->position.y = 0 + HOTBAR_H;
+    s1->position.y = -30 + HOTBAR_H;
 
     s2->position.x = -200;
-    s2->position.y =  + HOTBAR_H;
+    s2->position.y =  100 + HOTBAR_H;
 
     s2->velocity = {inputs.at(2)->getText() == "" ?
-                    100 : std::stod(inputs.at(2)->getText(), nullptr),
+                    120 : std::stod(inputs.at(2)->getText(), nullptr),
                     inputs.at(3)->getText() == "" ?
-                    600 : std::stod(inputs.at(3)->getText(), nullptr),
+                    430 : std::stod(inputs.at(3)->getText(), nullptr),
                     100};
 
     s1->velocity = {inputs.at(2)->getText() == "" ?
-                    -100 : std::stod(inputs.at(2)->getText(), nullptr),
+                    -600 : std::stod(inputs.at(2)->getText(), nullptr),
                     inputs.at(3)->getText() == "" ?
-                    -600 : std::stod(inputs.at(3)->getText(), nullptr),
+                    -193 : std::stod(inputs.at(3)->getText(), nullptr),
                     0};
 
 
@@ -112,6 +114,8 @@ void TwoBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOff
     s1->position.x += 0.5 * PIXELCONVERT * s1->acceleration.x * FRAME * FRAME + s1->velocity.x * FRAME;
     s1->position.y += 0.5 * PIXELCONVERT * s1->acceleration.y * FRAME * FRAME + s1->velocity.y * FRAME;
 
+
+    // Look at next fram for more accurate data
     double newTheta = atan2(s2->position.y - s1->position.y, s2->position.x - s1->position.x);
 
     double newRad = Object::distance(*s1, *s2) - s1->radius - s2->radius;
@@ -148,11 +152,17 @@ void TwoBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOff
     s2->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
 }
 
-void TwoBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy){
+void TwoBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy, std::vector<TextInput*> inputs){
     s1->mass = BIG_MASS;
     s2->mass = SMALL_MASS;
     *tabCycle = 0;
     *cameraOffx = *cameraOffy = 0;
+    delete inputs[0];
+    delete inputs[1];
+    delete inputs[2];
+    delete inputs[3];
+    delete inputs[4];
+    delete inputs[5];
 }
 
 int TwoBody::update(char *ch, int *tabCycle,
@@ -170,7 +180,7 @@ int TwoBody::update(char *ch, int *tabCycle,
         switch(e.key.keysym.scancode){
         case SDL_SCANCODE_ESCAPE:
         {
-            reset(s1, s2, tabCycle, cameraOffx, cameraOffy);
+            reset(s1, s2, tabCycle, cameraOffx, cameraOffy, inputs);
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer);
 
@@ -215,12 +225,21 @@ int TwoBody::update(char *ch, int *tabCycle,
                 s2->mass = 1000000000*std::stod(oneChange, nullptr);
                 break;
             case 2:
+                v = {std::stod(oneChange, nullptr), s1->velocity.y, 0};
+                s1->setVelocity(v);
+                break;
+            case 3:
+                v = {s1->velocity.x, std::stod(oneChange, nullptr), 0};
+                s1->setVelocity(v);
+                break;
+            case 4:
                 v = {std::stod(oneChange, nullptr), s2->velocity.y, 0};
                 s2->setVelocity(v);
                 break;
-            case 3:
+            case 5:
                 v = {s2->velocity.x, std::stod(oneChange, nullptr), 0};
                 s2->setVelocity(v);
+                break;
             }
             break;
         }

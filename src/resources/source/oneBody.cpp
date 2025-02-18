@@ -122,11 +122,16 @@ void OneBody::init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Spher
     SDL_RenderPresent(renderer);
 }
 
-void OneBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy){
+void OneBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy, std::vector<TextInput*> inputs){
     s1->mass = BIG_MASS;
     s2->mass = SMALL_MASS;
     *tabCycle = 0;
     *cameraOffx = *cameraOffy = 0;
+
+    delete inputs[0];
+    delete inputs[1];
+    delete inputs[2];
+    delete inputs[3];
 }
 
 int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx, int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector <TextInput*> inputs, Sphere *s1, Sphere *s2, bool *pause){
@@ -138,7 +143,7 @@ int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e,
         switch(e.key.keysym.scancode){
         case SDL_SCANCODE_ESCAPE:
         {
-            reset(s1, s2, tabCycle, cameraOffx, cameraOffy);
+            reset(s1, s2, tabCycle, cameraOffx, cameraOffy, inputs);
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             SDL_RenderClear(renderer);
 

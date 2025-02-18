@@ -19,7 +19,7 @@ public:
 
     static void init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2);
 
-    static void reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy);
+    static void reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy, std::vector<TextInput*> inputs);
 
     static int update(char *ch, int *tabCycle,
                     const Uint8 *keyState, SDL_Event e,

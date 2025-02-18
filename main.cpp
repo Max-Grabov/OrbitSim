@@ -163,6 +163,9 @@ int main(int argc, char *argv[]){
     SDL_DestroyWindow(window);
     free(ch);
     free(tabCycle);
+    delete textRenderer;
+    delete s1;
+    delete s2;
     SDL_Quit();
 
     return EXIT_SUCCESS;
