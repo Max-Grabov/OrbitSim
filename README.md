@@ -1,3 +1,10 @@
+# 4/19/2025 Update
+Now that I know more knowledge about c++ and better practices from work and other experiences i've done, I plan to remake this project completely. Not sure if I'll keep the SDL2 or switch to a different framework.
+
+In addition, since I have a new interest in Rust, I'll take the time once the c++ remake is done to release a different version of the project in Rust as well for my own learning.
+
+For now, I have to finish my semester and my own work strongly ^_^
+
 # OrbitSim
 A 2D Large body simulator built entirely with SDL2 and CMake and C++, Currently supports 1 Body Simulations.
 
