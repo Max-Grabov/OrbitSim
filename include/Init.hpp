@@ -1,4 +1,4 @@
-//Holds constant values and static SDL_Rect/Surfaces to not clog up main
+// Holds constant values and static SDL_Rect/Surfaces to not clog up main
 #include <SDL2/SDL.h>
 
 #include <iostream>
@@ -9,8 +9,8 @@
 
 #define SCREEN_WIDTH 1300
 #define SCREEN_HEIGHT 800
-#define OFFSET_X SCREEN_WIDTH/2
-#define OFFSET_Y SCREEN_HEIGHT/2 + 200
+#define OFFSET_X SCREEN_WIDTH / 2
+#define OFFSET_Y SCREEN_HEIGHT / 2 + 200
 #define HOTBAR_H 100
 #define FRAME 0.0075
 #define SCREENS 3
@@ -22,10 +22,10 @@
 #define CONVERSION 63.78
 #define INIT_DISTANCE 12833.333
 
-//X Y W H
+// X Y W H
 extern SDL_Rect Screen;
 
-extern SDL_Rect Options [];
+extern SDL_Rect Options[];
 
 extern SDL_Rect Hotbar;
 

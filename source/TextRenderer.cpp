@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-namespace OrbitSim
-{
+namespace OrbitSim {
 
 TextRenderer::TextRenderer(SDL_Renderer *renderer)
 {
@@ -13,7 +12,8 @@ TextRenderer::TextRenderer(SDL_Renderer *renderer)
   SDL_FreeSurface(surface);
 }
 
-void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, const int &x, const int &y)
+void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, const int &x,
+                          const int &y)
 {
   int current_x_position = 0;
 
@@ -69,8 +69,9 @@ void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, cons
       source_.w = 9;
       source_.h = LOWER_CASE_HEIGHT;
     }
-    
-    // Forced to do this since SDL_RenderCopy needs to define the dimensions for both the source rectangle on the texture, and the destination on the window
+
+    // Forced to do this since SDL_RenderCopy needs to define the dimensions for both the source
+    // rectangle on the texture, and the destination on the window
     dest_.x = x + current_x_position_;
     dest_.y = y;
     dest_.w = source_.w;
@@ -90,8 +91,5 @@ void TextRenderer::clearRender(SDL_Renderer *renderer, const int &x, const int &
   SDL_RenderFillRect(renderer, &to_delete);
 }
 
-TextRenderer::~TextRenderer() 
-{ 
-	SDL_DestroyTexture(texture); 
-}
-}
+TextRenderer::~TextRenderer() { SDL_DestroyTexture(texture); }
+} // namespace OrbitSim

@@ -1,7 +1,6 @@
 #include "Sphere.hpp"
 
-namespace OrbitSim
-{
+namespace OrbitSim {
 Sphere::Sphere(const double &radius, const double &mass) : radius_(radius), mass_(mass) {}
 
 void Sphere::Draw(SDL_Renderer *renderer, const int &offsetX, const int &offsetY) const
@@ -90,4 +89,4 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &offsetX, const int &offsetY
   SDL_RenderDrawPoints(renderer, p, l + 1);
   free(p);
 }
-}
+} // namespace OrbitSim

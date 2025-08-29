@@ -1,32 +1,19 @@
 #include "TextInput.hpp"
 
-namespace OrbitSim
-{
+namespace OrbitSim {
 TextInput::TextInput()
 {
   current_text_{""};
   border_{0, 0, 0, 0};
 }
 
-const std::string &TextInput::getText() const 
-{ 
-	return current_text_;
-}
+const std::string &TextInput::getText() const { return current_text_; }
 
-const SDL_Rect &TextInput::getBorder() const
-{ 
-	return border_; 
-}
+const SDL_Rect &TextInput::getBorder() const { return border_; }
 
-void TextInput::setText(std::string text) 
-{ 
-	current_text_ = std::move(text)
-}
+void TextInput::setText(std::string text) { current_text_ = std::move(text) }
 
-void TextInput::setBorder(SDL_Rect border) 
-{ 
-	border_ = std::move(border);
-}
+void TextInput::setBorder(SDL_Rect border) { border_ = std::move(border); }
 
 void TextInput::init(SDL_Renderer *renderer) const
 {
@@ -57,4 +44,4 @@ void TextInput::deleteChar(const TextRenderer &text_renderer, SDL_Renderer *rend
 
   text_renderer->clearRender(renderer, x_pixel_to_type, border_.y + BORDER_OFFSET);
 }
-}
+} // namespace OrbitSim

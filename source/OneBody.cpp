@@ -1,11 +1,7 @@
 #include "OneBody.hpp"
 
-namespace OrbitSim
-{
-void OneBody::init(SDL_Renderer *renderer)
-{
-  
-}
+namespace OrbitSim {
+void OneBody::init(SDL_Renderer *renderer) {}
 void OneBody::initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer,
                          std::vector<TextInput *> inputs)
 {
@@ -386,4 +382,4 @@ int OneBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e,
     return 1;
   }
 }
-}
+} // namespace OrbitSim

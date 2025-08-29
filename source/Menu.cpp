@@ -1,7 +1,6 @@
 #include "Menu.hpp"
 
-namespace OrbitSim
-{
+namespace OrbitSim {
 void Menu::loadMenu(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -14,4 +13,4 @@ void Menu::loadMenu(SDL_Renderer *renderer, const TextRenderer &text_renderer)
   text_renderer.render(renderer, "Two Body", SCREEN_WIDTH / 2 - 45 + 150, SCREEN_HEIGHT / 2 - 50);
   text_renderer.render(renderer, "Simulation", SCREEN_WIDTH / 2 - 43 + 150, SCREEN_HEIGHT / 2 - 25);
 }
-}
+} // namespace OrbitSim
