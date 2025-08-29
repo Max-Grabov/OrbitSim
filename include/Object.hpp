@@ -5,6 +5,8 @@
 #define G 6.67430e-11
 #define gn = 9.80665
 
+namespace OrbitSim
+{
 typedef struct Vector 
 {
     int x_, y_, z_;
@@ -41,3 +43,4 @@ public:
 
     static double distance(const Object &obj1, const Object &obj2);
 };
+}

@@ -2,87 +2,96 @@
 
 #include <iostream>
 
-TextRenderer::TextRenderer(SDL_Renderer *renderer){
-    SDL_Surface *surface = SDL_LoadBMP("src/resources/include/font.bmp");
-    this->texture = SDL_CreateTextureFromSurface(renderer, surface);
+namespace OrbitSim
+{
 
-    SDL_FreeSurface(surface);
+TextRenderer::TextRenderer(SDL_Renderer *renderer)
+{
+  SDL_Surface *surface = SDL_LoadBMP("src/resources/include/font.bmp");
+  texture_ = SDL_CreateTextureFromSurface(renderer, surface);
+
+  SDL_FreeSurface(surface);
 }
 
-void TextRenderer::render(SDL_Renderer *renderer, std::string input, int x, int y){
-    int currX = 0;
+void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, const int &x, const int &y)
+{
+  int current_x_position = 0;
 
-    //Debugger
-    //std::cout << input << std::endl;
-
-    for(auto c : input){
-        if(c >= '0' && c <= '9'){
-            //Get character source from map
-            this->source.x = numX[c - '0'];
-            this->source.y = NUM_STARTY;
-            this->source.w = numX[c - '0' + 1] - numX[c - '0'];
-            this->source.h = NUM_HEIGHT;
-        }
-
-        else if(c >= 'a' && c <= 'z'){
-            this->source.x = lowerLetterX[c - 'a'];
-            this->source.y = LOWER_CASE_STARTY;
-            this->source.w = lowerLetterX[c - 'a' + 1] - lowerLetterX[c - 'a'];
-            this->source.h = LOWER_CASE_HEIGHT;
-        }
-
-        else if(c >= 'A' && c <= 'Z'){
-            this->source.x = upperLetterX[c - 'A'];
-            this->source.y = UPPER_CASE_STARTY;
-            this->source.w = upperLetterX[c - 'A' + 1] - upperLetterX[c - 'A'];
-            this->source.h = UPPER_CASE_HEIGHT;
-        }
-
-        else if(c == ' '){
-            //This is a blank spot on the map
-            this->source.x = lowerLetterX[26] + 3;
-            this->source.y = LOWER_CASE_STARTY;
-            this->source.w = NUM_WIDTH;
-            this->source.h = LOWER_CASE_HEIGHT;
-        }
-
-        else if(c == '('){
-            this->source.x = 131;
-            this->source.y = NUM_STARTY;
-            this->source.w = 9;
-            this->source.h = NUM_HEIGHT;
-        }
-
-        else if(c == ')'){
-            this->source.x = 183;
-            this->source.y = NUM_STARTY;
-            this->source.w = 9;
-            this->source.h = NUM_HEIGHT;
-        }
-
-        else if(c == '/'){
-            this->source.x = 287;
-            this->source.y = LOWER_CASE_STARTY;
-            this->source.w = 9;
-            this->source.h = LOWER_CASE_HEIGHT;
-        }
-        this->dest.x = x + currX;
-        this->dest.y = y;
-        this->dest.w = this->source.w;
-        this->dest.h = this->source.h;
-
-        currX += this->source.w;
-        SDL_RenderCopy(renderer, this->texture, &this->source, &dest);
+  // Probably a better way to do this but i dont give a fuck
+  for (const auto &c : input) {
+    if (c >= '0' && c <= '9') {
+      source_.x = number_x_positions[c - '0'];
+      source_.y = NUM_STARTY;
+      source_.w = number_x_positions[c - '0' + 1] - number_x_positions[c - '0'];
+      source_.h = NUM_HEIGHT;
     }
+
+    else if (c >= 'a' && c <= 'z') {
+      source_.x = lower_case_x_positions[c - 'a'];
+      source_.y = LOWER_CASE_STARTY;
+      source_.w = lower_case_x_positions[c - 'a' + 1] - lower_case_x_positions[c - 'a'];
+      source_.h = LOWER_CASE_HEIGHT;
+    }
+
+    else if (c >= 'A' && c <= 'Z') {
+      source_.x = upper_case_x_positions[c - 'A'];
+      source_.y = UPPER_CASE_STARTY;
+      source_.w = upper_case_x_positions[c - 'A' + 1] - upper_case_x_positions[c - 'A'];
+      source_.h = UPPER_CASE_HEIGHT;
+    }
+
+    else if (c == ' ') {
+      // This is a blank spot on the map
+      source_.x = lower_case_x_positions[26] + 3;
+      source_.y = LOWER_CASE_STARTY;
+      source_.w = NUM_WIDTH;
+      source_.h = LOWER_CASE_HEIGHT;
+    }
+
+    // TODO Get rid of Magic Numbers
+    else if (c == '(') {
+      source_.x = 131;
+      source_.y = NUM_STARTY;
+      source_.w = 9;
+      source_.h = NUM_HEIGHT;
+    }
+
+    else if (c == ')') {
+      source_.x = 183;
+      source_.y = NUM_STARTY;
+      source_.w = 9;
+      source_.h = NUM_HEIGHT;
+    }
+
+    else if (c == '/') {
+      source_.x = 287;
+      source_.y = LOWER_CASE_STARTY;
+      source_.w = 9;
+      source_.h = LOWER_CASE_HEIGHT;
+    }
+    
+    // Forced to do this since SDL_RenderCopy needs to define the dimensions for both the source rectangle on the texture, and the destination on the window
+    dest_.x = x + current_x_position_;
+    dest_.y = y;
+    dest_.w = source_.w;
+    dest_.h = source_.h;
+
+    current_x_position += source_.w;
+    SDL_RenderCopy(renderer, texture, &source, &dest);
+  }
 }
 
-void TextRenderer::clearRender(SDL_Renderer *renderer, int x, int y){
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-    SDL_Rect del = {x + 1, y, NUM_WIDTH + 1, NUM_HEIGHT + 1};
-    SDL_RenderDrawRect(renderer, &del);
-    SDL_RenderFillRect(renderer, &del);
+void TextRenderer::clearRender(SDL_Renderer *renderer, const int &x, const int &y) const
+{
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  SDL_Rect to_delete = {x + 1, y, NUM_WIDTH + 1, NUM_HEIGHT + 1};
+
+  SDL_RenderDrawRect(renderer, &to_delete);
+  SDL_RenderFillRect(renderer, &to_delete);
 }
 
-TextRenderer::~TextRenderer(){
-    SDL_DestroyTexture(texture);
+TextRenderer::~TextRenderer() 
+{ 
+	SDL_DestroyTexture(texture); 
+}
 }

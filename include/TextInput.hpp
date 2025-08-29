@@ -8,25 +8,28 @@
 #define BORDER_OFFSET 1
 #define LIMIT 8
 
+namespace OrbitSim
+{
 class TextInput {
 private:
-    std::string currentText;
-    SDL_Rect border;
+    std::string current_text_;
+    SDL_Rect border_;
 
 public:
     TextInput();
 
-    std::string getText();
+    const std::string &getText() const;
 
-    SDL_Rect getBorder();
+    const SDL_Rect &getBorder() const;
 
-    void setText(std::string s);
+    void setText(std::string text);
 
-    void setBorder(SDL_Rect r);
+    void setBorder(SDL_Rect border);
 
-    void init(SDL_Renderer *renderer);
+    void init(SDL_Renderer *renderer) const;
 
-    void type(TextRenderer *tRenderer, SDL_Renderer *renderer, char *c);
+    void type(const TextRenderer &text_renderer, SDL_Renderer *renderer, const char &input);
 
-    void deleteChar(TextRenderer *tRenderer, SDL_Renderer *renderer);
+    void deleteChar(const TextRenderer &text_rendere, SDL_Renderer *renderer);
 };
+}
