@@ -1,9 +1,8 @@
-#ifndef TIN_H_
-#define TIN_H_
+#pragma once
+#include "SDL2/SDL.h"
+#include "TextRenderer.hpp"
 
 #include <string>
-#include <../SDL2/SDL.h>
-#include "textRenderer.h"
 
 #define BORDER_OFFSET 1
 #define LIMIT 8
@@ -30,4 +29,3 @@ public:
 
     void deleteChar(TextRenderer *tRenderer, SDL_Renderer *renderer);
 };
-#endif

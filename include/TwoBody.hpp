@@ -1,13 +1,11 @@
-#ifndef _TWO_BODY_
-#define _TWO_BODY_
+#pragma once
 
-#include "../SDL2/SDL.h"
-#include "menu.h"
-#include "init.h"
-#include "objects.h"
-#include "sphere.h"
-#include "textRenderer.h"
-#include "textInput.h"
+#include "SDL2/SDL.h"
+#include "Menu.hpp"
+#include "Init.hpp"
+#include "Sphere.hpp"
+#include "TextRenderer.hpp"
+#include "TextInput.hpp"
 
 class TwoBody {
 public:

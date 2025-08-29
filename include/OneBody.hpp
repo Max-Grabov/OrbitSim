@@ -1,13 +1,11 @@
-#ifndef _ONE_BODY_
-#define _ONE_BODY_
+#pragma once
 
-#include "../SDL2/SDL.h"
-#include "menu.h"
-#include "init.h"
-#include "objects.h"
-#include "sphere.h"
-#include "textRenderer.h"
-#include "textInput.h"
+#include "SDL2/SDL.h"
+#include "Menu.hpp"
+#include "Init.hpp"
+#include "Sphere.hpp"
+#include "TextRenderer.hpp"
+#include "TextInput.hpp"
 
 namespace OneBody {
     static void calc(const &Sphere sphere_one, const &Sphere sphere_two, SDL_Renderer *renderer, const &int cameraOffx, const &int cameraOffy);
@@ -27,5 +25,3 @@ namespace OneBody {
                     *tRenderer, std::vector <TextInput*> inputs,
                     Sphere *s1, Sphere *s2, bool *pause);
 };
-
-#endif
