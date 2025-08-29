@@ -1,11 +1,9 @@
 // Holds constant values and static SDL_Rect/Surfaces to not clog up main
+#pragma once
 #include <SDL2/SDL.h>
 
 #include <iostream>
 #include <vector>
-
-#ifndef INIT_H_
-#define INIT_H_
 
 #define SCREEN_WIDTH 1300
 #define SCREEN_HEIGHT 800
@@ -40,5 +38,3 @@ extern SDL_Rect twoInputVel;
 extern SDL_Rect threeInputVel;
 
 extern SDL_Rect fourInputVel;
-
-#endif

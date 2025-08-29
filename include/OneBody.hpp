@@ -22,17 +22,18 @@ public:
 
   static void initHotbar(SDL_Renderer *renderer);
 
-  static std::vector<TextInput *> initTextBox();
+  static void initTextBox();
 
-  static int update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx,
-                    int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer,
-                    std::vector<TextInput *> inputs, Sphere *s1, Sphere *s2, bool *pause);
+  static int update(const char &input_char, const Uint8 *keyState, const SDL_Event &e,
+                    SDL_Renderer *renderer, const TextRenderer &text_renderer);
 
 private:
   Sphere sphere_one_, sphere_two_;
   int camera_offset_x_, camera_offset_y_;
   bool pause_;
   std::array<TextInput, 4> textboxes_;
+  std::array<SDL_Rect, 4> textbox_borders_{
+      {139, 19, 100, 19}, {139. 59, 100, 19}, {433, 19, 100, 19}, {433, 59, 100, 19}};
   int selected_box_;
 
   void InitHotbar(SDL_Renderer *renderer);

@@ -44,4 +44,10 @@ void TextInput::deleteChar(const TextRenderer &text_renderer, SDL_Renderer *rend
 
   text_renderer->clearRender(renderer, x_pixel_to_type, border_.y + BORDER_OFFSET);
 }
+
+void TextInput::reset()
+{
+  current_text_ = "";
+  border_ = {0, 0, 0, 0};
+}
 } // namespace OrbitSim

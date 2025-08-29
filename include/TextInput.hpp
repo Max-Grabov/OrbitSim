@@ -29,6 +29,8 @@ public:
 
   void type(const TextRenderer &text_renderer, SDL_Renderer *renderer, const char &input);
 
-  void deleteChar(const TextRenderer &text_rendere, SDL_Renderer *renderer);
+  void deleteChar(const TextRenderer &text_renderer, SDL_Renderer *renderer);
+
+  void reset();
 };
 } // namespace OrbitSim
