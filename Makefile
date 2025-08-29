@@ -1,2 +1,0 @@
-all:
-	@g++ -I src/resources/include -L src/lib -o main main.cpp src/resources/source/menu.cpp src/resources/source/objects.cpp src/resources/source/oneBody.cpp src/resources/source/sphere.cpp src/resources/source/textInput.cpp src/resources/source/textRenderer.cpp src/resources/source/init.cpp src/resources/source/twoBody.cpp -lmingw32 -lSDL2main -lSDL2

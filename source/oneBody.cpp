@@ -1,6 +1,6 @@
-#include "../include/oneBody.h"
+#include "include/oneBody.hpp"
 
-void OneBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy){
+void OneBody::calc(Sphere &sphere_one, Sphere &sphere_two, SDL_Renderer *renderer, const int &cameraOffx, const int &cameraOffy){
 
     //Fill the rectangle every frame with white, effectively clearing this portion of the screen
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);

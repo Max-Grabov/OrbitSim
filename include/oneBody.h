@@ -9,11 +9,10 @@
 #include "textRenderer.h"
 #include "textInput.h"
 
-class OneBody {
-public:
-    static void calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy);
+namespace OneBody {
+    static void calc(const &Sphere sphere_one, const &Sphere sphere_two, SDL_Renderer *renderer, const &int cameraOffx, const &int cameraOffy);
 
-    static void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer, std::vector<TextInput*> inputs);
+    static void initHotbar(SDL_Renderer *renderer, const &TextRenderer tRenderer, std::vector<TextInput*> inputs);
 
     static std::vector<TextInput*> initTextBox();
 
