@@ -13,7 +13,7 @@ I'll probably rewrite this project but keep the core of it the same (no new feat
 Refactor will include support for generating build files in Cmake, _hopefully_ more efficient code, modernized code incorporating more modernized C++ and not whatever the heck is currently here.
 
 ### Old ReadME
-
+---
 # OrbitSim
 A 2D Large body simulator built entirely with SDL2 and CMake and C++, Currently supports 1 Body Simulations.
 
