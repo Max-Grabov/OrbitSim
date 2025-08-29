@@ -1,4 +1,4 @@
-#include "include/oneBody.hpp"
+#include "include/OneBody.hpp"
 
 void OneBody::calc(Sphere &sphere_one, Sphere &sphere_two, SDL_Renderer *renderer, const int &cameraOffx, const int &cameraOffy){
 

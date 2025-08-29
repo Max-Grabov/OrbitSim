@@ -1,4 +1,4 @@
-#include "../include/TwoBody.h"
+#include "include/TwoBody.hpp"
 
 void TwoBody::init(std::vector<TextInput*> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2){
 

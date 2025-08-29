@@ -1,4 +1,4 @@
-#include "../include/textInput.h"
+#include "include/TextInput.hpp"
 
 TextInput::TextInput(){
     this->currentText = "";

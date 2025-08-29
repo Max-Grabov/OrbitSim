@@ -1,4 +1,4 @@
-#include "../include/init.h"
+#include "include/Init.hpp"
 
 SDL_Rect Screen = {0, HOTBAR_H + 1, 2*SCREEN_WIDTH, SCREEN_HEIGHT};
 

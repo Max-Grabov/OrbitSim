@@ -1,4 +1,4 @@
-#include "../include/menu.h"
+#include "include/Menu.hpp"
 
 void Menu::loadMenu(SDL_Renderer *renderer, TextRenderer *tRenderer){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);

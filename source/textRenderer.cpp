@@ -1,4 +1,5 @@
-#include "../include/textRenderer.h"
+#include "include/TextRenderer.hpp"
+
 #include <iostream>
 
 TextRenderer::TextRenderer(SDL_Renderer *renderer){
