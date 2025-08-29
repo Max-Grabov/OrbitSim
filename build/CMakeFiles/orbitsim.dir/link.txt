@@ -1,2 +1,0 @@
-/usr/bin/ar qc liborbitsim.a CMakeFiles/orbitsim.dir/source/Init.cpp.o CMakeFiles/orbitsim.dir/source/Menu.cpp.o CMakeFiles/orbitsim.dir/source/Object.cpp.o CMakeFiles/orbitsim.dir/source/OneBody.cpp.o CMakeFiles/orbitsim.dir/source/Sphere.cpp.o CMakeFiles/orbitsim.dir/source/TextInput.cpp.o CMakeFiles/orbitsim.dir/source/TextRenderer.cpp.o CMakeFiles/orbitsim.dir/source/TwoBody.cpp.o
-/usr/bin/ranlib liborbitsim.a
