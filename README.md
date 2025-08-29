@@ -12,6 +12,15 @@ I'll probably rewrite this project but keep the core of it the same (no new feat
 
 Refactor will include support for generating build files in Cmake, _hopefully_ more efficient code, modernized code incorporating more modernized C++ and not whatever the heck is currently here.
 
+Obviously It currently can't compile, but to compile in the future and run
+```bash
+# Ensure you install the package libsdl2-dev on unix systems
+cmake -S . -B build
+cmake --build build
+
+./build/orbitsim
+```
+
 ### Old ReadME
 ---
 # OrbitSim
