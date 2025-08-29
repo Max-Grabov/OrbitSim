@@ -1,11 +1,12 @@
-#include "include/Object.h"
+#include "Object.hpp"
 
-Object::Object(const int &x, const int &y, const int &z)
-{
-    position_ = {x, y, z};
-}
+Object::Object(const int &x, const int &y, const int &z) : position_({x, y, z}) {}
 
-void Object::setVelocity(VectorD &&velocity)
+Object::Object(Vector position) : position_(std::move(position)) {}
+
+Object::Object(Vector position, VectorD velocity, VectorD acceleration) : position_(std::move(position)), velocity_(std::move(velocity)), acceleration_(std::move(acceleration)) {}
+
+void Object::setVelocity(VectorD velocity)
 {
     velocity_ = std::move(velocity);
 }
@@ -16,5 +17,5 @@ void Object::setVelocity(const VectorD &velocity)
 }
 double Object::distance(const Object &A, const Object &B)
 {
-    return sqrt(pow(A.position.x - B.position.x, 2) + pow(A.position.y - B.position.y, 2));
+    return sqrt(pow(A.position_.x_ - B.position_.x_, 2) + pow(A.position_.y_ - B.position_.y_, 2));
 }

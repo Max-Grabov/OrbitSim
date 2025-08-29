@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SDL2/SDL.h"
 #include "Menu.hpp"
 #include "Init.hpp"
 #include "Sphere.hpp"

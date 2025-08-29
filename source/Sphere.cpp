@@ -1,4 +1,4 @@
-#include "include/Sphere.hpp"
+#include "Sphere.hpp"
 
 Sphere::Sphere(const double &radius, const double &mass) : radius_(radius), mass_(mass) {}
 

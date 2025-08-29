@@ -1,7 +1,7 @@
 #pragma once
-#include "SDL.h"
-#include "Object.h"
-#include "Init.h"
+
+#include "Object.hpp"
+#include "Init.hpp"
 
 #include <cmath>
 #include <list>

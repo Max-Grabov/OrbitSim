@@ -1,7 +1,8 @@
 //Holds constant values and static SDL_Rect/Surfaces to not clog up main
+#include <SDL2/SDL.h>
+
 #include <iostream>
 #include <vector>
-#include <SDL2/SDL.h>
 
 #ifndef INIT_H_
 #define INIT_H_

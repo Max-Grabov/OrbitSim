@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SDL2/SDL.h"
-
 #include <string>
+
+#include "Init.hpp"
 
 #define LOWER_CASE_STARTY 6
 #define LOWER_CASE_HEIGHT 16

@@ -1,0 +1,4 @@
+/home/max/OrbitSim/build/CMakeFiles/orbitsim.dir
+/home/max/OrbitSim/build/CMakeFiles/OrbitSim.dir
+/home/max/OrbitSim/build/CMakeFiles/edit_cache.dir
+/home/max/OrbitSim/build/CMakeFiles/rebuild_cache.dir

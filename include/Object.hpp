@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 #define G 6.67430e-11
 #define gn = 9.80665
@@ -25,9 +25,9 @@ private:
 public:
     Object(const int &x = 0, const int &y = 0, const int &z = 0);
    
-    Object(const Vector &position);
+    Object(Vector position);
 
-    Object(const Vector &position, const VectorD &velocity, const VectorD &acceleration);
+    Object(Vector position, VectorD velocity, VectorD acceleration);
 
     inline Vector getPosition() const { return position_; }
 
@@ -37,7 +37,7 @@ public:
     
     void setVelocity(const VectorD &velocity);
 
-    void setVelocity(VectorD &&velocity)
+    void setVelocity(VectorD velocity);
 
     static double distance(const Object &obj1, const Object &obj2);
 };
