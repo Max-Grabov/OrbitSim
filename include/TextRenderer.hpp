@@ -15,6 +15,9 @@
 #define NUM_STARTY 49
 #define NUM_HEIGHT 15
 
+// TODO Typing has been bugged before and upon switching to running on unix systems, the bug
+// is at this point happening 100% of the time.
+// Look into fixing duplicate letters
 namespace OrbitSim {
 
 // Lower and upper case x values, There is an extra integer to account for Z in the rendering
@@ -33,11 +36,11 @@ public:
   // the texture after it falls out of scope This means it can't be written utilizing a simple
   // shared_ptr, since it won't call the required destroy texture method
   // TODO Possibly add a wrapper for things such as SDL_Texture and SDL_Renderer?
-  SDL_Texture *texture_;
+  SDL_Texture *texture_ = nullptr;
 
   mutable SDL_Rect source_, dest_;
 
-  TextRenderer(SDL_Renderer *renderer);
+  void init(SDL_Renderer *renderer);
 
   void render(SDL_Renderer *renderer, const std::string &input, const int &x, const int &y) const;
 

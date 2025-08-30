@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Init.hpp"
-#include "Menu.hpp"
 #include "Sphere.hpp"
 #include "TextInput.hpp"
 #include "TextRenderer.hpp"
@@ -18,24 +17,11 @@ public:
   // TODO Pause should be moved back to private
   bool pause_{false};
 
+  void run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate) override;
+
   void init(SDL_Renderer *renderer, const TextRenderer &text_renderer) override;
 
-  void reset(SDL_Renderer *renderer) override;
-
-  void run(SDL_Renderer *renderer) override;
-
-  // TODO both inits should be privatized in favor of using the base init method from the virtual
-  // class
-  // TODO Also calc needs to be privatized eventually
-  // TODO Eventually turn Update into the run method
-  void initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer);
-
-  void initData(SDL_Renderer *renderer);
-
-  void calc(SDL_Renderer *renderer);
-
-  int update(const Uint8 *key_state, const SDL_Event &event, SDL_Renderer *renderer,
-             const TextRenderer &text_renderer);
+  void exit(SDL_Renderer *renderer) override;
 
 private:
   Sphere sphere_one_, sphere_two_;
@@ -45,7 +31,17 @@ private:
                                            SPHERE_ONE_VELOCITY_X_BORDER,
                                            SPHERE_ONE_VELOCITY_Y_BORDER};
   int selected_box_{0};
+  bool running_{false};
+  SDL_Event current_event_;
 
-  void InitHotbar(SDL_Renderer *renderer);
+  void handleEvents(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate);
+
+  void handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate);
+
+  void initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer);
+
+  void initData(SDL_Renderer *renderer);
+
+  void calc(SDL_Renderer *renderer);
 };
 } // namespace OrbitSim

@@ -4,7 +4,7 @@
 
 namespace OrbitSim {
 
-TextRenderer::TextRenderer(SDL_Renderer *renderer)
+void TextRenderer::init(SDL_Renderer *renderer)
 {
   SDL_Surface *surface = SDL_LoadBMP("include/font.bmp");
   texture_ = SDL_CreateTextureFromSurface(renderer, surface);

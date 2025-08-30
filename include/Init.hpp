@@ -11,7 +11,8 @@
 #define OFFSET_Y SCREEN_HEIGHT / 2 + 200
 #define HOTBAR_H 100
 #define FRAME 0.0075
-#define SCREENS 3
+// TODO Screens should be deleted once moving to each window having their own loop
+#define SCREENS 1
 #define BIG_MASS 2000000000000000000
 #define SMALL_MASS 2000000000000
 #define PIXELCONVERT 1

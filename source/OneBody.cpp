@@ -6,54 +6,24 @@ void OneBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
   initHotbar(renderer, text_renderer);
   initData(renderer);
 }
-void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer)
+
+// TODO thanks sdl for not using uint8_t
+void OneBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-  text_renderer.render(renderer, "Mass One(Tg)", 10, 20);
-  text_renderer.render(renderer, "Mass Two(Gg)", 10, 60);
+  while(running_)
+  {
+    SDL_PollEvent(&current_event_);
+    handleEvents(current_event_, renderer, text_renderer, keystate);
 
-  text_renderer.render(renderer, "Velocity Two X(m/s)", 245, 20);
-  text_renderer.render(renderer, "Velocity Two Y(m/s)", 245, 60);
-
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-  SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2 * SCREEN_WIDTH, HOTBAR_H);
-
-  const auto initial_border = textboxes_[0].getBorder();
-
-  SDL_RenderDrawLine(renderer, initial_border.x, initial_border.y + initial_border.h + 3,
-                     initial_border.x + initial_border.w, initial_border.y + initial_border.h + 3);
-
-  for (size_t i = 0; i < 4; ++i) {
-    textboxes_[i].setBorder(textbox_borders_[i]);
-    textboxes_[i].init(renderer);
+    if(!pause_)
+    {
+      calc(renderer);
+    }
   }
+  std::cout << "leaving\n";
 }
 
-void OneBody::initData(SDL_Renderer *renderer)
-{
-  sphere_one_.mass_ = BIG_MASS;
-  sphere_two_.mass_ = SMALL_MASS;
-
-  sphere_one_.radius_ = 100;
-  sphere_two_.radius_ = 25;
-
-  sphere_one_.position_.x_ = 0;
-  sphere_one_.position_.y_ = 0 + HOTBAR_H;
-
-  sphere_two_.position_.x_ = 212;
-  sphere_two_.position_.y_ = 212 + HOTBAR_H;
-
-  sphere_two_.setVelocity(
-      {textboxes_[2].getText() == "" ? 900 : std::stod(textboxes_[2].getText(), nullptr),
-       textboxes_[3].getText() == "" ? -900 : std::stod(textboxes_[3].getText(), nullptr), 0});
-
-  sphere_one_.Draw(renderer, OFFSET_X, OFFSET_Y);
-  sphere_two_.Draw(renderer, OFFSET_X, OFFSET_Y);
-
-  SDL_RenderPresent(renderer);
-}
-
-void OneBody::reset(SDL_Renderer *renderer)
+void OneBody::exit(SDL_Renderer *renderer)
 {
   sphere_one_.mass_ = BIG_MASS;
   sphere_two_.mass_ = SMALL_MASS;
@@ -66,106 +36,30 @@ void OneBody::reset(SDL_Renderer *renderer)
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
+
+  running_ = false;
 }
 
-// TODO for main loop
-void OneBody::run(SDL_Renderer *renderer) {}
-
-void OneBody::calc(SDL_Renderer *renderer)
+void OneBody::handleEvents(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-
-  // Fill the rectangle every frame with white, effectively clearing this
-  // portion of the screen
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-  SDL_RenderFillRect(renderer, &Screen);
-
-  // Setup math
-  double distance_from_surface =
-      (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
-      PIXELCONVERT;
-
-  if (distance_from_surface < 1e-6)
-    distance_from_surface = 1e-6;
-
-  double force_gravity =
-      (G * sphere_two_.mass_ * sphere_one_.mass_) / (pow(distance_from_surface, 2));
-
-  // Use theta from -pi to pi
-  double theta;
-
-  if (sphere_two_.position_.x_ == sphere_one_.position_.x_) {
-    theta = (sphere_two_.position_.y_ > sphere_one_.position_.y_) ? M_PI / 2 : -M_PI / 2;
+  switch (event.type) {
+    case SDL_KEYDOWN:
+      handleKeyboardInput(event, renderer, text_renderer, keystate);
+      break;
   }
-  else {
-    // So OP
-    theta = atan2(1.0 * (sphere_two_.position_.y_ - sphere_one_.position_.y_),
-                  1.0 * (sphere_two_.position_.x_ - sphere_one_.position_.x_));
-  }
-
-  Vector old_position = sphere_two_.position_;
-
-  // Kinematics
-  double force_gravity_x = -cos(theta) * force_gravity;
-  double force_gravity_y = -sin(theta) * force_gravity;
-
-  sphere_two_.position_.x_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.x_ * FRAME * FRAME +
-                              sphere_two_.velocity_.x_ * FRAME;
-  sphere_two_.position_.y_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.y_ * FRAME * FRAME +
-                              sphere_two_.velocity_.y_ * FRAME;
-
-  // TODO I am guaranteeing I did something very wrong here when i first wrote this.
-  // TODO Fix these calculations and ensure calculations make actual sense
-
-  // For error correction
-  double new_theta = atan2(sphere_two_.position_.y_ - sphere_one_.position_.y_,
-                           sphere_two_.position_.x_ - sphere_one_.position_.x_);
-
-  double new_distance_from_surface =
-      Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_;
-  double new_force_gravity = (G * sphere_two_.mass_ * sphere_one_.mass_) /
-                             (new_distance_from_surface * new_distance_from_surface);
-
-  double new_force_gravity_x = -cos(new_theta) * new_force_gravity;
-  double new_force_gravity_y = -sin(new_theta) * new_force_gravity;
-
-  double new_acceleration_x = new_force_gravity_x / sphere_two_.mass_;
-  double new_acceleration_y = new_force_gravity_y / sphere_two_.mass_;
-
-  // Try to counteract error cummulation via looking at next accel
-  sphere_two_.velocity_.x_ += 0.5 * (sphere_two_.acceleration_.x_ + new_acceleration_x) * FRAME;
-  sphere_two_.velocity_.y_ += 0.5 * (sphere_two_.acceleration_.y_ + new_acceleration_y) * FRAME;
-
-  sphere_two_.acceleration_.x_ = new_acceleration_x;
-  sphere_two_.acceleration_.y_ = new_acceleration_y;
-
-  // TODO Why was this done before? also this should not be in this method
-  SDL_Delay(100);
-
-  sphere_one_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
-  sphere_two_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
 }
 
-// TODO this should really be turned into the new run method with its own event loop (Infrastructure
-// from window class)
-int OneBody::update(const Uint8 *key_state, const SDL_Event &event, SDL_Renderer *renderer,
-                    const TextRenderer &text_renderer)
+void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-
   const auto border = textboxes_.at(selected_box_).getBorder();
-  char input_character;
 
   // TODO remove this bullshit
   std::string new_velocity_value;
 
-  switch (event.type) {
-  case SDL_KEYDOWN:
-    switch (event.key.keysym.scancode) {
+  switch (event.key.keysym.scancode) {
     case SDL_SCANCODE_ESCAPE: {
-      reset(renderer);
-
-      // TODO this should probably be in a different class
-      Menu::loadMenu(renderer, text_renderer);
-      return 0;
+      exit(renderer);
+      return;
     }
 
     // TODO Holy shit a renderer wrapper is a must wtf is this block
@@ -274,24 +168,143 @@ int OneBody::update(const Uint8 *key_state, const SDL_Event &event, SDL_Renderer
 
     default:
       break;
-    }
 
-    if (key_state[SDL_SCANCODE_UP]) {
+    // TODO probably change this
+    if (keystate[SDL_SCANCODE_UP]) {
       camera_offset_y_ -= 5;
     }
-    if (key_state[SDL_SCANCODE_DOWN]) {
+    if (keystate[SDL_SCANCODE_DOWN]) {
       camera_offset_y_ += 5;
     }
-    if (key_state[SDL_SCANCODE_RIGHT]) {
+    if (keystate[SDL_SCANCODE_RIGHT]) {
       camera_offset_x_ += 5;
     }
-    if (key_state[SDL_SCANCODE_LEFT]) {
+    if (keystate[SDL_SCANCODE_LEFT]) {
       camera_offset_x_ -= 5;
     }
-    return 1;
-
-  default:
-    return 1;
   }
+}
+
+void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer)
+{
+  text_renderer.render(renderer, "Mass One(Tg)", 10, 20);
+  text_renderer.render(renderer, "Mass Two(Gg)", 10, 60);
+
+  text_renderer.render(renderer, "Velocity Two X(m/s)", 245, 20);
+  text_renderer.render(renderer, "Velocity Two Y(m/s)", 245, 60);
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+  SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2 * SCREEN_WIDTH, HOTBAR_H);
+
+  const auto initial_border = textboxes_[0].getBorder();
+
+  SDL_RenderDrawLine(renderer, initial_border.x, initial_border.y + initial_border.h + 3,
+                     initial_border.x + initial_border.w, initial_border.y + initial_border.h + 3);
+
+  for (size_t i = 0; i < 4; ++i) {
+    textboxes_[i].setBorder(textbox_borders_[i]);
+    textboxes_[i].init(renderer);
+  }
+}
+
+void OneBody::initData(SDL_Renderer *renderer)
+{
+  sphere_one_.mass_ = BIG_MASS;
+  sphere_two_.mass_ = SMALL_MASS;
+
+  sphere_one_.radius_ = 100;
+  sphere_two_.radius_ = 25;
+
+  sphere_one_.position_.x_ = 0;
+  sphere_one_.position_.y_ = 0 + HOTBAR_H;
+
+  sphere_two_.position_.x_ = 212;
+  sphere_two_.position_.y_ = 212 + HOTBAR_H;
+
+  sphere_two_.setVelocity(
+      {textboxes_[2].getText() == "" ? 900 : std::stod(textboxes_[2].getText(), nullptr),
+       textboxes_[3].getText() == "" ? -900 : std::stod(textboxes_[3].getText(), nullptr), 0});
+
+  sphere_one_.Draw(renderer, OFFSET_X, OFFSET_Y);
+  sphere_two_.Draw(renderer, OFFSET_X, OFFSET_Y);
+
+  running_ = true;
+
+  SDL_RenderPresent(renderer);
+}
+
+void OneBody::calc(SDL_Renderer *renderer)
+{
+
+  // Fill the rectangle every frame with white, effectively clearing this
+  // portion of the screen
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  SDL_RenderFillRect(renderer, &Screen);
+
+  // Setup math
+  double distance_from_surface =
+      (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
+      PIXELCONVERT;
+
+  if (distance_from_surface < 1e-6)
+    distance_from_surface = 1e-6;
+
+  double force_gravity =
+      (G * sphere_two_.mass_ * sphere_one_.mass_) / (pow(distance_from_surface, 2));
+
+  // Use theta from -pi to pi
+  double theta;
+
+  if (sphere_two_.position_.x_ == sphere_one_.position_.x_) {
+    theta = (sphere_two_.position_.y_ > sphere_one_.position_.y_) ? M_PI / 2 : -M_PI / 2;
+  }
+  else {
+    // So OP
+    theta = atan2(1.0 * (sphere_two_.position_.y_ - sphere_one_.position_.y_),
+                  1.0 * (sphere_two_.position_.x_ - sphere_one_.position_.x_));
+  }
+
+  Vector old_position = sphere_two_.position_;
+
+  // Kinematics
+  double force_gravity_x = -cos(theta) * force_gravity;
+  double force_gravity_y = -sin(theta) * force_gravity;
+
+  sphere_two_.position_.x_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.x_ * FRAME * FRAME +
+                              sphere_two_.velocity_.x_ * FRAME;
+  sphere_two_.position_.y_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.y_ * FRAME * FRAME +
+                              sphere_two_.velocity_.y_ * FRAME;
+
+  // TODO I am guaranteeing I did something very wrong here when i first wrote this.
+  // TODO Fix these calculations and ensure calculations make actual sense
+
+  // For error correction
+  double new_theta = atan2(sphere_two_.position_.y_ - sphere_one_.position_.y_,
+                           sphere_two_.position_.x_ - sphere_one_.position_.x_);
+
+  double new_distance_from_surface =
+      Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_;
+  double new_force_gravity = (G * sphere_two_.mass_ * sphere_one_.mass_) /
+                             (new_distance_from_surface * new_distance_from_surface);
+
+  double new_force_gravity_x = -cos(new_theta) * new_force_gravity;
+  double new_force_gravity_y = -sin(new_theta) * new_force_gravity;
+
+  double new_acceleration_x = new_force_gravity_x / sphere_two_.mass_;
+  double new_acceleration_y = new_force_gravity_y / sphere_two_.mass_;
+
+  // Try to counteract error cummulation via looking at next accel
+  sphere_two_.velocity_.x_ += 0.5 * (sphere_two_.acceleration_.x_ + new_acceleration_x) * FRAME;
+  sphere_two_.velocity_.y_ += 0.5 * (sphere_two_.acceleration_.y_ + new_acceleration_y) * FRAME;
+
+  sphere_two_.acceleration_.x_ = new_acceleration_x;
+  sphere_two_.acceleration_.y_ = new_acceleration_y;
+
+  // TODO Why was this done before? also this should not be in this method
+  SDL_Delay(100);
+
+  sphere_one_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
+  sphere_two_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
 }
 } // namespace OrbitSim
