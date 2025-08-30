@@ -3,8 +3,10 @@
 #include "OneBody.hpp"
 #include <cstdint>
 
-namespace OrbitSim {
-class Application {
+namespace OrbitSim
+{
+class Application
+{
 public:
   void init();
 

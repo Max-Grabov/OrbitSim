@@ -1,6 +1,7 @@
 #include "TextInput.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 TextInput::TextInput() : current_text_(""), border_({0, 0, 0, 0}) {}
 
 const std::string &TextInput::getText() const { return current_text_; }
@@ -21,7 +22,8 @@ void TextInput::type(const TextRenderer &text_renderer, SDL_Renderer *renderer, 
 {
   int x_pixel_to_type = BORDER_OFFSET + border_.x + 11 * (current_text_.length());
 
-  if (current_text_.length() >= LIMIT) {
+  if(current_text_.length() >= LIMIT)
+  {
     return;
   }
 
@@ -34,7 +36,8 @@ void TextInput::type(const TextRenderer &text_renderer, SDL_Renderer *renderer, 
 
 void TextInput::deleteChar(const TextRenderer &text_renderer, SDL_Renderer *renderer)
 {
-  if (current_text_.length() == 0) {
+  if(current_text_.length() == 0)
+  {
     return;
   }
 

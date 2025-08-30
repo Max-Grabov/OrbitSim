@@ -1,6 +1,7 @@
 #include "Object.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 Object::Object(const int &x, const int &y, const int &z) : position_({x, y, z}) {}
 
 Object::Object(Vector position) : position_(std::move(position)) {}

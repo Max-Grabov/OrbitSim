@@ -9,8 +9,10 @@
 // Used to not add points that are in the hotbar space on the window
 #define HOTBAR_H 100
 
-namespace OrbitSim {
-class Sphere : public Object {
+namespace OrbitSim
+{
+class Sphere : public Object
+{
 public:
   int radius_;
   double mass_;

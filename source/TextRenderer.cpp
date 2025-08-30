@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 
 void TextRenderer::init(SDL_Renderer *renderer)
 {
@@ -18,29 +19,34 @@ void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, cons
   int current_x_position = 0;
 
   // Probably a better way to do this but i dont give a fuck
-  for (const auto &c : input) {
-    if (c >= '0' && c <= '9') {
+  for(const auto &c : input)
+  {
+    if(c >= '0' && c <= '9')
+    {
       source_.x = number_x_positions[c - '0'];
       source_.y = NUM_STARTY;
       source_.w = number_x_positions[c - '0' + 1] - number_x_positions[c - '0'];
       source_.h = NUM_HEIGHT;
     }
 
-    else if (c >= 'a' && c <= 'z') {
+    else if(c >= 'a' && c <= 'z')
+    {
       source_.x = lower_case_x_positions[c - 'a'];
       source_.y = LOWER_CASE_STARTY;
       source_.w = lower_case_x_positions[c - 'a' + 1] - lower_case_x_positions[c - 'a'];
       source_.h = LOWER_CASE_HEIGHT;
     }
 
-    else if (c >= 'A' && c <= 'Z') {
+    else if(c >= 'A' && c <= 'Z')
+    {
       source_.x = upper_case_x_positions[c - 'A'];
       source_.y = UPPER_CASE_STARTY;
       source_.w = upper_case_x_positions[c - 'A' + 1] - upper_case_x_positions[c - 'A'];
       source_.h = UPPER_CASE_HEIGHT;
     }
 
-    else if (c == ' ') {
+    else if(c == ' ')
+    {
       // This is a blank spot on the map
       source_.x = lower_case_x_positions[26] + 3;
       source_.y = LOWER_CASE_STARTY;
@@ -49,21 +55,24 @@ void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, cons
     }
 
     // TODO Get rid of Magic Numbers
-    else if (c == '(') {
+    else if(c == '(')
+    {
       source_.x = 131;
       source_.y = NUM_STARTY;
       source_.w = 9;
       source_.h = NUM_HEIGHT;
     }
 
-    else if (c == ')') {
+    else if(c == ')')
+    {
       source_.x = 183;
       source_.y = NUM_STARTY;
       source_.w = 9;
       source_.h = NUM_HEIGHT;
     }
 
-    else if (c == '/') {
+    else if(c == '/')
+    {
       source_.x = 287;
       source_.y = LOWER_CASE_STARTY;
       source_.w = 9;

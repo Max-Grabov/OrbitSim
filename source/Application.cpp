@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 void Application::init()
 {
   running_ = true;
@@ -10,7 +11,8 @@ void Application::init()
   window_ = SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH,
                              SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
 
-  if (!window_) {
+  if(!window_)
+  {
     std::cerr << "Error creating window: " << SDL_GetError() << "\n";
     throw std::exception();
   }
@@ -18,7 +20,8 @@ void Application::init()
   // TODO 10th to do on this make this a wrapper please
   renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
 
-  if (!renderer_) {
+  if(!renderer_)
+  {
     std::cerr << "Error creating renderer: " << SDL_GetError() << "\n";
     throw std::exception();
   }
@@ -33,7 +36,8 @@ void Application::init()
   SDL_RenderClear(renderer_);
 
   keystate_ = SDL_GetKeyboardState(NULL);
-  if (!keystate_) {
+  if(!keystate_)
+  {
     std::cerr << "Error getting keyboard state: " << SDL_GetError() << "\n";
     throw std::exception();
   }
@@ -58,11 +62,12 @@ void Application::init()
 
 void Application::run()
 {
-  while (running_) {
+  while(running_)
+  {
     SDL_PollEvent(&event_);
     handleEvents();
 
-    if (!running_)
+    if(!running_)
       break;
     SDL_RenderPresent(renderer_);
   }
@@ -79,7 +84,8 @@ void Application::exit()
 
 void Application::handleEvents()
 {
-  switch (event_.type) {
+  switch(event_.type)
+  {
   case SDL_KEYDOWN:
     handleKeyboardInput();
     break;
@@ -91,7 +97,8 @@ void Application::handleEvents()
 
 void Application::handleKeyboardInput()
 {
-  switch (event_.key.keysym.scancode) {
+  switch(event_.key.keysym.scancode)
+  {
   case SDL_SCANCODE_ESCAPE:
     exit();
     return;
@@ -123,7 +130,8 @@ void Application::handleKeyboardInput()
 
 void Application::handleWindowChange()
 {
-  switch (selected_screen_) {
+  switch(selected_screen_)
+  {
   case 0:
     one_body_.init(renderer_, text_renderer_);
     one_body_.run(renderer_, text_renderer_, keystate_);

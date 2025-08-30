@@ -22,7 +22,8 @@
 #define INIT_DISTANCE 12833.333
 
 // X Y W H
-namespace OrbitSim {
+namespace OrbitSim
+{
 extern SDL_Rect Screen;
 
 extern SDL_Rect Options[];

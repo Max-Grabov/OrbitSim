@@ -11,8 +11,10 @@
 // TODO Clearly every method includes the renderer, once again reminder to make a fucking wrapper
 // for it Also, make these windows have a text renderer (static maybe?) member since it is so
 // commonly used
-namespace OrbitSim {
-class OneBody : public Window {
+namespace OrbitSim
+{
+class OneBody : public Window
+{
 public:
   // TODO Pause should be moved back to private
   bool pause_{false};

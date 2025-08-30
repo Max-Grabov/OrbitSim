@@ -1,6 +1,7 @@
 #include "Init.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 SDL_Rect Screen = {0, HOTBAR_H + 1, 2 * SCREEN_WIDTH, SCREEN_HEIGHT};
 
 SDL_Rect Options[] = {{SCREEN_WIDTH / 2 - 100 - 150, SCREEN_HEIGHT / 2 - 100, 200, 200},

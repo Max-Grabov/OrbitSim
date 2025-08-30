@@ -6,16 +6,20 @@
 #define G 6.67430e-11
 #define gn = 9.80665
 
-namespace OrbitSim {
-typedef struct Vector {
+namespace OrbitSim
+{
+typedef struct Vector
+{
   int x_, y_, z_;
 } Vector;
 
-typedef struct VectorD {
+typedef struct VectorD
+{
   double x_, y_, z_;
 } VectorD;
 
-class Object {
+class Object
+{
 private:
 public:
   // TODO these should be moved to private and a setter should be added

@@ -1,6 +1,7 @@
 #include "Sphere.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 Sphere::Sphere(const double &radius, const double &mass) : radius_(radius), mass_(mass) {}
 
 // TODO FIX THIS GARBAGE HOLY SHIT
@@ -18,31 +19,38 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
   SDL_Point p3 = {position_.x_ + camera_offset_x, -position_.y_ + camera_offset_y - radius_};
   SDL_Point p4 = {position_.x_ + camera_offset_x - radius_, -position_.y_ + camera_offset_y};
 
-  if (-position_.y_ + camera_offset_y >= HOTBAR_H) {
+  if(-position_.y_ + camera_offset_y >= HOTBAR_H)
+  {
     points.push_front(p1);
     points.push_front(p4);
   }
 
-  if (-position_.y_ + camera_offset_y + radius_ >= HOTBAR_H) {
+  if(-position_.y_ + camera_offset_y + radius_ >= HOTBAR_H)
+  {
     points.push_front(p2);
   }
 
-  if (-position_.y_ + camera_offset_y - radius_ >= HOTBAR_H) {
+  if(-position_.y_ + camera_offset_y - radius_ >= HOTBAR_H)
+  {
     points.push_front(p3);
   }
 
-  while (sX > sY) {
+  while(sX > sY)
+  {
     sY++;
 
-    if (tmp <= 0) {
+    if(tmp <= 0)
+    {
       tmp += 2 * sY + 1;
     }
-    else {
+    else
+    {
       sX--;
       tmp += 2 * sY - 2 * sX + 1;
     }
 
-    if (sX < sY) {
+    if(sX < sY)
+    {
       break;
     }
 
@@ -51,12 +59,14 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
     p3 = {sX + position_.x_ + camera_offset_x, -sY + -position_.y_ + camera_offset_y};
     p4 = {-sX + position_.x_ + camera_offset_x, -sY + -position_.y_ + camera_offset_y};
 
-    if (sY + -position_.y_ + camera_offset_y >= HOTBAR_H) {
+    if(sY + -position_.y_ + camera_offset_y >= HOTBAR_H)
+    {
       points.push_front(p1);
       points.push_front(p2);
     }
 
-    if (-sY + -position_.y_ + camera_offset_y >= HOTBAR_H) {
+    if(-sY + -position_.y_ + camera_offset_y >= HOTBAR_H)
+    {
       points.push_front(p3);
       points.push_front(p4);
     }
@@ -66,12 +76,14 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
     p3 = {sY + position_.x_ + camera_offset_x, -sX + -position_.y_ + camera_offset_y};
     p4 = {-sY + position_.x_ + camera_offset_x, -sX + -position_.y_ + camera_offset_y};
 
-    if (sX + -position_.y_ + camera_offset_y >= HOTBAR_H) {
+    if(sX + -position_.y_ + camera_offset_y >= HOTBAR_H)
+    {
       points.push_front(p1);
       points.push_front(p2);
     }
 
-    if (-sX + -position_.y_ + camera_offset_y >= HOTBAR_H) {
+    if(-sX + -position_.y_ + camera_offset_y >= HOTBAR_H)
+    {
       points.push_front(p3);
       points.push_front(p4);
     }
@@ -82,7 +94,8 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
 
   SDL_Point *p = (SDL_Point *)malloc(sizeof(SDL_Point) * l);
 
-  for (auto const &i : points) {
+  for(auto const &i : points)
+  {
     p[k].x = i.x;
     p[k++].y = i.y;
   }

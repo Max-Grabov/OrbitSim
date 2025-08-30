@@ -1,6 +1,7 @@
 #include "OneBody.hpp"
 
-namespace OrbitSim {
+namespace OrbitSim
+{
 void OneBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 {
   initHotbar(renderer, text_renderer);
@@ -10,17 +11,18 @@ void OneBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 // TODO thanks sdl for not using uint8_t
 void OneBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-  while (running_) {
+  while(running_)
+  {
     SDL_PollEvent(&current_event_);
     handleEvents(current_event_, renderer, text_renderer, keystate);
 
-    if (!pause_) {
+    if(!pause_)
+    {
       calc(renderer);
     }
 
     SDL_RenderPresent(renderer);
   }
-  std::cout << "leaving\n";
 }
 
 void OneBody::exit(SDL_Renderer *renderer)
@@ -30,7 +32,8 @@ void OneBody::exit(SDL_Renderer *renderer)
   selected_box_ = 0;
   camera_offset_x_ = camera_offset_y_ = 0;
 
-  for (size_t i = 0; i < 4; ++i) {
+  for(size_t i = 0; i < 4; ++i)
+  {
     textboxes_[i].reset();
   }
 
@@ -43,7 +46,8 @@ void OneBody::exit(SDL_Renderer *renderer)
 void OneBody::handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
                            const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-  switch (event.type) {
+  switch(event.type)
+  {
   case SDL_KEYDOWN:
     handleKeyboardInput(event, renderer, text_renderer, keystate);
     break;
@@ -58,14 +62,17 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
   // TODO remove this bullshit
   std::string new_velocity_value;
 
-  switch (event.key.keysym.scancode) {
-  case SDL_SCANCODE_ESCAPE: {
+  switch(event.key.keysym.scancode)
+  {
+  case SDL_SCANCODE_ESCAPE:
+  {
     exit(renderer);
     return;
   }
 
   // TODO Holy shit a renderer wrapper is a must wtf is this block
-  case SDL_SCANCODE_TAB: {
+  case SDL_SCANCODE_TAB:
+  {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderDrawLine(renderer, border.x, border.y + border.h + 3, border.x + border.w,
                        border.y + border.h + 3);
@@ -81,15 +88,18 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
     break;
   }
 
-  case SDL_SCANCODE_A: {
+  case SDL_SCANCODE_A:
+  {
     new_velocity_value = textboxes_.at(selected_box_).getText();
 
-    if (new_velocity_value == "") {
+    if(new_velocity_value == "")
+    {
       break;
     }
 
     // TODO This is utter dogshit change this later
-    switch (selected_box_) {
+    switch(selected_box_)
+    {
     case 0:
       sphere_one_.mass_ = 1000000000000 * std::stod(new_velocity_value, nullptr);
       break;
@@ -107,63 +117,75 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
     break;
   }
 
-  case SDL_SCANCODE_P: {
+  case SDL_SCANCODE_P:
+  {
     pause_ = !pause_;
     break;
   }
 
   // TODO Look into making this if else and not spam this
-  case SDL_SCANCODE_0: {
+  case SDL_SCANCODE_0:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '0');
     break;
   }
 
-  case SDL_SCANCODE_1: {
+  case SDL_SCANCODE_1:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '1');
     break;
   }
 
-  case SDL_SCANCODE_2: {
+  case SDL_SCANCODE_2:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '2');
     break;
   }
 
-  case SDL_SCANCODE_3: {
+  case SDL_SCANCODE_3:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '3');
     break;
   }
 
-  case SDL_SCANCODE_4: {
+  case SDL_SCANCODE_4:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '4');
     break;
   }
 
-  case SDL_SCANCODE_5: {
+  case SDL_SCANCODE_5:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '5');
     break;
   }
 
-  case SDL_SCANCODE_6: {
+  case SDL_SCANCODE_6:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '6');
     break;
   }
 
-  case SDL_SCANCODE_7: {
+  case SDL_SCANCODE_7:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '7');
     break;
   }
 
-  case SDL_SCANCODE_8: {
+  case SDL_SCANCODE_8:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '8');
     break;
   }
 
-  case SDL_SCANCODE_9: {
+  case SDL_SCANCODE_9:
+  {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '9');
     break;
   }
 
-  case SDL_SCANCODE_BACKSPACE: {
+  case SDL_SCANCODE_BACKSPACE:
+  {
     textboxes_.at(selected_box_).deleteChar(text_renderer, renderer);
     break;
   }
@@ -172,16 +194,20 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
     break;
 
     // TODO probably change this
-    if (keystate[SDL_SCANCODE_UP]) {
+    if(keystate[SDL_SCANCODE_UP])
+    {
       camera_offset_y_ -= 5;
     }
-    if (keystate[SDL_SCANCODE_DOWN]) {
+    if(keystate[SDL_SCANCODE_DOWN])
+    {
       camera_offset_y_ += 5;
     }
-    if (keystate[SDL_SCANCODE_RIGHT]) {
+    if(keystate[SDL_SCANCODE_RIGHT])
+    {
       camera_offset_x_ += 5;
     }
-    if (keystate[SDL_SCANCODE_LEFT]) {
+    if(keystate[SDL_SCANCODE_LEFT])
+    {
       camera_offset_x_ -= 5;
     }
   }
@@ -189,7 +215,6 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
 
 void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 {
-  std::cout << "initing onebody hotbar\n";
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   text_renderer.render(renderer, "Mass One(Tg)", 10, 20);
   text_renderer.render(renderer, "Mass Two(Gg)", 10, 60);
@@ -206,7 +231,8 @@ void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_render
   SDL_RenderDrawLine(renderer, initial_border.x, initial_border.y + initial_border.h + 3,
                      initial_border.x + initial_border.w, initial_border.y + initial_border.h + 3);
 
-  for (size_t i = 0; i < 4; ++i) {
+  for(size_t i = 0; i < 4; ++i)
+  {
     textboxes_[i].setBorder(textbox_borders_[i]);
     textboxes_[i].init(renderer);
   }
@@ -214,7 +240,6 @@ void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_render
 
 void OneBody::initData(SDL_Renderer *renderer)
 {
-  std::cout << "initData OneBody\n";
   sphere_one_.mass_ = BIG_MASS;
   sphere_two_.mass_ = SMALL_MASS;
 
@@ -252,7 +277,7 @@ void OneBody::calc(SDL_Renderer *renderer)
       (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
       PIXELCONVERT;
 
-  if (distance_from_surface < 1e-6)
+  if(distance_from_surface < 1e-6)
     distance_from_surface = 1e-6;
 
   double force_gravity =
@@ -261,10 +286,12 @@ void OneBody::calc(SDL_Renderer *renderer)
   // Use theta from -pi to pi
   double theta;
 
-  if (sphere_two_.position_.x_ == sphere_one_.position_.x_) {
+  if(sphere_two_.position_.x_ == sphere_one_.position_.x_)
+  {
     theta = (sphere_two_.position_.y_ > sphere_one_.position_.y_) ? M_PI / 2 : -M_PI / 2;
   }
-  else {
+  else
+  {
     // So OP
     theta = atan2(1.0 * (sphere_two_.position_.y_ - sphere_one_.position_.y_),
                   1.0 * (sphere_two_.position_.x_ - sphere_one_.position_.x_));

@@ -6,7 +6,8 @@
 #include "TextInput.hpp"
 #include "TextRenderer.hpp"
 
-class TwoBody {
+class TwoBody
+{
 public:
   static void init(std::vector<TextInput *> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2);
 

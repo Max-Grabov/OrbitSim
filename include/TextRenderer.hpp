@@ -18,7 +18,8 @@
 // TODO Typing has been bugged before and upon switching to running on unix systems, the bug
 // is at this point happening 100% of the time.
 // Look into fixing duplicate letters
-namespace OrbitSim {
+namespace OrbitSim
+{
 
 // Lower and upper case x values, There is an extra integer to account for Z in the rendering
 // function without having if checks
@@ -30,7 +31,8 @@ const int upper_case_x_positions[] = {8,   19,  30,  41,  52,  63,  74,  84,  95
                                       200, 210, 220, 232, 242, 253, 264, 275, 286};
 const int number_x_positions[] = {9, 20, 30, 41, 52, 63, 73, 84, 95, 106, 116};
 
-class TextRenderer {
+class TextRenderer
+{
 public:
   // texture_ has to be a raw pointer, since it doesn't have a destructor to take care of destroying
   // the texture after it falls out of scope This means it can't be written utilizing a simple
