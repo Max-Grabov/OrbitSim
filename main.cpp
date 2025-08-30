@@ -4,12 +4,10 @@ int main(int argc, char *argv[])
 {
   OrbitSim::Application application;
 
-  try
-  {
+  try {
     application.init();
   }
-  catch(const std::exception &)
-  {
+  catch (const std::exception &) {
     return EXIT_FAILURE;
   }
 

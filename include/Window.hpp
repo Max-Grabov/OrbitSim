@@ -9,6 +9,7 @@ class Window {
 
   virtual void exit(SDL_Renderer *renderer) = 0;
 
-  virtual void run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate) = 0;
+  virtual void run(SDL_Renderer *renderer, const TextRenderer &text_renderer,
+                   const Uint8 *keystate) = 0;
 };
 } // namespace OrbitSim

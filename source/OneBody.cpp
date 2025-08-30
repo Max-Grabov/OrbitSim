@@ -10,13 +10,11 @@ void OneBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 // TODO thanks sdl for not using uint8_t
 void OneBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
-  while(running_)
-  {
+  while (running_) {
     SDL_PollEvent(&current_event_);
     handleEvents(current_event_, renderer, text_renderer, keystate);
 
-    if(!pause_)
-    {
+    if (!pause_) {
       calc(renderer);
     }
 
@@ -42,16 +40,18 @@ void OneBody::exit(SDL_Renderer *renderer)
   running_ = false;
 }
 
-void OneBody::handleEvents(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
+void OneBody::handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
+                           const TextRenderer &text_renderer, const Uint8 *keystate)
 {
   switch (event.type) {
-    case SDL_KEYDOWN:
-      handleKeyboardInput(event, renderer, text_renderer, keystate);
-      break;
+  case SDL_KEYDOWN:
+    handleKeyboardInput(event, renderer, text_renderer, keystate);
+    break;
   }
 }
 
-void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
+void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer,
+                                  const TextRenderer &text_renderer, const Uint8 *keystate)
 {
   const auto border = textboxes_.at(selected_box_).getBorder();
 
@@ -59,117 +59,117 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
   std::string new_velocity_value;
 
   switch (event.key.keysym.scancode) {
-    case SDL_SCANCODE_ESCAPE: {
-      exit(renderer);
-      return;
-    }
+  case SDL_SCANCODE_ESCAPE: {
+    exit(renderer);
+    return;
+  }
 
-    // TODO Holy shit a renderer wrapper is a must wtf is this block
-    case SDL_SCANCODE_TAB: {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-      SDL_RenderDrawLine(renderer, border.x, border.y + border.h + 3, border.x + border.w,
-                         border.y + border.h + 3);
+  // TODO Holy shit a renderer wrapper is a must wtf is this block
+  case SDL_SCANCODE_TAB: {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, border.x, border.y + border.h + 3, border.x + border.w,
+                       border.y + border.h + 3);
 
-      selected_box_ = (selected_box_ + 1) % 4;
+    selected_box_ = (selected_box_ + 1) % 4;
 
-      const auto new_border = textboxes_.at(selected_box_).getBorder();
+    const auto new_border = textboxes_.at(selected_box_).getBorder();
 
-      // Add new line
-      SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-      SDL_RenderDrawLine(renderer, new_border.x, new_border.y + new_border.h + 3,
-                         new_border.x + new_border.w, new_border.y + new_border.h + 3);
+    // Add new line
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, new_border.x, new_border.y + new_border.h + 3,
+                       new_border.x + new_border.w, new_border.y + new_border.h + 3);
+    break;
+  }
+
+  case SDL_SCANCODE_A: {
+    new_velocity_value = textboxes_.at(selected_box_).getText();
+
+    if (new_velocity_value == "") {
       break;
     }
 
-    case SDL_SCANCODE_A: {
-      new_velocity_value = textboxes_.at(selected_box_).getText();
-
-      if (new_velocity_value == "") {
-        break;
-      }
-
-      // TODO This is utter dogshit change this later
-      switch (selected_box_) {
-      case 0:
-        sphere_one_.mass_ = 1000000000000 * std::stod(new_velocity_value, nullptr);
-        break;
-      case 1:
-        sphere_two_.mass_ = 1000000000 * std::stod(new_velocity_value, nullptr);
-        break;
-      case 2:
-        sphere_two_.setVelocity(
-            {std::stod(new_velocity_value, nullptr), sphere_two_.velocity_.y_, 0});
-        break;
-      case 3:
-        sphere_two_.setVelocity(
-            {sphere_two_.velocity_.x_, std::stod(new_velocity_value, nullptr), 0});
-      }
+    // TODO This is utter dogshit change this later
+    switch (selected_box_) {
+    case 0:
+      sphere_one_.mass_ = 1000000000000 * std::stod(new_velocity_value, nullptr);
       break;
+    case 1:
+      sphere_two_.mass_ = 1000000000 * std::stod(new_velocity_value, nullptr);
+      break;
+    case 2:
+      sphere_two_.setVelocity(
+          {std::stod(new_velocity_value, nullptr), sphere_two_.velocity_.y_, 0});
+      break;
+    case 3:
+      sphere_two_.setVelocity(
+          {sphere_two_.velocity_.x_, std::stod(new_velocity_value, nullptr), 0});
     }
+    break;
+  }
 
-    case SDL_SCANCODE_P: {
-      pause_ = !pause_;
-      break;
-    }
+  case SDL_SCANCODE_P: {
+    pause_ = !pause_;
+    break;
+  }
 
-    // TODO Look into making this if else and not spam this
-    case SDL_SCANCODE_0: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '0');
-      break;
-    }
+  // TODO Look into making this if else and not spam this
+  case SDL_SCANCODE_0: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '0');
+    break;
+  }
 
-    case SDL_SCANCODE_1: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '1');
-      break;
-    }
+  case SDL_SCANCODE_1: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '1');
+    break;
+  }
 
-    case SDL_SCANCODE_2: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '2');
-      break;
-    }
+  case SDL_SCANCODE_2: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '2');
+    break;
+  }
 
-    case SDL_SCANCODE_3: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '3');
-      break;
-    }
+  case SDL_SCANCODE_3: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '3');
+    break;
+  }
 
-    case SDL_SCANCODE_4: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '4');
-      break;
-    }
+  case SDL_SCANCODE_4: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '4');
+    break;
+  }
 
-    case SDL_SCANCODE_5: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '5');
-      break;
-    }
+  case SDL_SCANCODE_5: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '5');
+    break;
+  }
 
-    case SDL_SCANCODE_6: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '6');
-      break;
-    }
+  case SDL_SCANCODE_6: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '6');
+    break;
+  }
 
-    case SDL_SCANCODE_7: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '7');
-      break;
-    }
+  case SDL_SCANCODE_7: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '7');
+    break;
+  }
 
-    case SDL_SCANCODE_8: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '8');
-      break;
-    }
+  case SDL_SCANCODE_8: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '8');
+    break;
+  }
 
-    case SDL_SCANCODE_9: {
-      textboxes_.at(selected_box_).type(text_renderer, renderer, '9');
-      break;
-    }
+  case SDL_SCANCODE_9: {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '9');
+    break;
+  }
 
-    case SDL_SCANCODE_BACKSPACE: {
-      textboxes_.at(selected_box_).deleteChar(text_renderer, renderer);
-      break;
-    }
+  case SDL_SCANCODE_BACKSPACE: {
+    textboxes_.at(selected_box_).deleteChar(text_renderer, renderer);
+    break;
+  }
 
-    default:
-      break;
+  default:
+    break;
 
     // TODO probably change this
     if (keystate[SDL_SCANCODE_UP]) {

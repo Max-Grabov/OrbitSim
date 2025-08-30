@@ -3,16 +3,15 @@
 #include "OneBody.hpp"
 #include <cstdint>
 
-namespace OrbitSim
-{
-class Application
-{
+namespace OrbitSim {
+class Application {
 public:
   void init();
 
   void run();
 
   void exit();
+
 private:
   OneBody one_body_;
   TextRenderer text_renderer_;
@@ -30,4 +29,4 @@ private:
 
   void handleWindowChange();
 };
-}
+} // namespace OrbitSim

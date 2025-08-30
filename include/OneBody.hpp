@@ -17,7 +17,8 @@ public:
   // TODO Pause should be moved back to private
   bool pause_{false};
 
-  void run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate) override;
+  void run(SDL_Renderer *renderer, const TextRenderer &text_renderer,
+           const Uint8 *keystate) override;
 
   void init(SDL_Renderer *renderer, const TextRenderer &text_renderer) override;
 
@@ -34,9 +35,11 @@ private:
   bool running_{false};
   SDL_Event current_event_;
 
-  void handleEvents(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate);
+  void handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
+                    const TextRenderer &text_renderer, const Uint8 *keystate);
 
-  void handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate);
+  void handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer,
+                           const TextRenderer &text_renderer, const Uint8 *keystate);
 
   void initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer);
 
