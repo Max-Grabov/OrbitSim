@@ -27,7 +27,7 @@ public:
 
   void init(SDL_Renderer *renderer) const;
 
-  void type(const TextRenderer &text_renderer, SDL_Renderer *renderer, const char &input);
+  void type(const TextRenderer &text_renderer, SDL_Renderer *renderer, char input);
 
   void deleteChar(const TextRenderer &text_renderer, SDL_Renderer *renderer);
 

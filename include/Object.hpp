@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <initializer_list>
 
 #define G 6.67430e-11
 #define gn = 9.80665
@@ -16,11 +17,12 @@ typedef struct VectorD {
 
 class Object {
 private:
+public:
+  // TODO these should be moved to private and a setter should be added
   Vector position_;
   VectorD velocity_;
   VectorD acceleration_;
 
-public:
   Object(const int &x = 0, const int &y = 0, const int &z = 0);
 
   Object(Vector position);
@@ -32,8 +34,6 @@ public:
   inline VectorD getVelocity() const { return velocity_; }
 
   inline VectorD getAcceleration() const { return acceleration_; }
-
-  void setVelocity(const VectorD &velocity);
 
   void setVelocity(VectorD velocity);
 

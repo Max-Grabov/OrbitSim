@@ -15,8 +15,6 @@ public:
   int radius_;
   double mass_;
 
-  Sphere();
-
   Sphere(const double &radius = 1, const double &mass = 0);
 
   void Draw(SDL_Renderer *renderer, const int &offsetX, const int &offsetY) const;

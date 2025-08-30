@@ -6,14 +6,14 @@ namespace OrbitSim {
 
 TextRenderer::TextRenderer(SDL_Renderer *renderer)
 {
-  SDL_Surface *surface = SDL_LoadBMP("src/resources/include/font.bmp");
+  SDL_Surface *surface = SDL_LoadBMP("include/font.bmp");
   texture_ = SDL_CreateTextureFromSurface(renderer, surface);
 
   SDL_FreeSurface(surface);
 }
 
 void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, const int &x,
-                          const int &y)
+                          const int &y) const
 {
   int current_x_position = 0;
 
@@ -72,13 +72,13 @@ void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, cons
 
     // Forced to do this since SDL_RenderCopy needs to define the dimensions for both the source
     // rectangle on the texture, and the destination on the window
-    dest_.x = x + current_x_position_;
+    dest_.x = x + current_x_position;
     dest_.y = y;
     dest_.w = source_.w;
     dest_.h = source_.h;
 
     current_x_position += source_.w;
-    SDL_RenderCopy(renderer, texture, &source, &dest);
+    SDL_RenderCopy(renderer, texture_, &source_, &dest_);
   }
 }
 
@@ -91,5 +91,5 @@ void TextRenderer::clearRender(SDL_Renderer *renderer, const int &x, const int &
   SDL_RenderFillRect(renderer, &to_delete);
 }
 
-TextRenderer::~TextRenderer() { SDL_DestroyTexture(texture); }
+TextRenderer::~TextRenderer() { SDL_DestroyTexture(texture_); }
 } // namespace OrbitSim

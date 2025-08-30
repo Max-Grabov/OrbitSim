@@ -21,20 +21,22 @@
 #define INIT_DISTANCE 12833.333
 
 // X Y W H
+namespace OrbitSim {
 extern SDL_Rect Screen;
 
 extern SDL_Rect Options[];
 
 extern SDL_Rect Hotbar;
 
-extern SDL_Rect oneInputMass;
+extern SDL_Rect SPHERE_ONE_MASS_BORDER;
 
-extern SDL_Rect twoInputMass;
+extern SDL_Rect SPHERE_TWO_MASS_BORDER;
 
-extern SDL_Rect oneInputVel;
+extern SDL_Rect SPHERE_ONE_VELOCITY_X_BORDER;
 
-extern SDL_Rect twoInputVel;
+extern SDL_Rect SPHERE_ONE_VELOCITY_Y_BORDER;
 
 extern SDL_Rect threeInputVel;
 
 extern SDL_Rect fourInputVel;
+} // namespace OrbitSim

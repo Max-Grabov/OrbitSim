@@ -24,4 +24,3 @@ public:
                     int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer,
                     std::vector<TextInput *> inputs, Sphere *s1, Sphere *s2);
 };
-#endif

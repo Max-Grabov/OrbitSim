@@ -13,7 +13,6 @@ Object::Object(Vector position, VectorD velocity, VectorD acceleration)
 
 void Object::setVelocity(VectorD velocity) { velocity_ = std::move(velocity); }
 
-void Object::setVelocity(const VectorD &velocity) { velocity_ = velocity; }
 double Object::distance(const Object &A, const Object &B)
 {
   return sqrt(pow(A.position_.x_ - B.position_.x_, 2) + pow(A.position_.y_ - B.position_.y_, 2));

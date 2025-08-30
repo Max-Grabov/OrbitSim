@@ -1,30 +1,24 @@
-// On Windows compile with:
-// g++ -I src/resources/include -L src/lib -o main main.cpp -lmingw32 -lSDL2main
-// -lSDL2
-#include "src/resources/SDL2/SDL.h"
-#include "src/resources/include/TwoBody.h"
-#include "src/resources/include/init.h"
-#include "src/resources/include/menu.h"
-#include "src/resources/include/objects.h"
-#include "src/resources/include/oneBody.h"
-#include "src/resources/include/sphere.h"
-#include "src/resources/include/textInput.h"
-#include "src/resources/include/textRenderer.h"
+#include "SDL2/SDL.h"
+// #include "TwoBody.hpp"
+#include "include/Init.hpp"
+#include "include/Menu.hpp"
+#include "include/Object.hpp"
+#include "include/OneBody.hpp"
+#include "include/Sphere.hpp"
+#include "include/TextInput.hpp"
+#include "include/TextRenderer.hpp"
+
+// TODO get off of this but im too lazy rn
+using namespace OrbitSim;
 
 int main(int argc, char *argv[])
 {
-  int cameraOffx = 0;
-  int cameraOffy = 0;
-
-  int *tabCycle = (int *)malloc(sizeof(int));
-  *tabCycle = 0;
   int currScreen = 0;
   int selectedScreen = 1;
 
   bool onMenu = true;
   bool c = false;
   bool on = true;
-  bool pause = false;
 
   SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -32,17 +26,17 @@ int main(int argc, char *argv[])
       SDL_CreateWindow("Sim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH,
                        SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL);
 
+  // TODO 10th to do on this make this a wrapper please
   SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-  TextRenderer *textRenderer = new TextRenderer(renderer);
+  // TODO This should be window specific instead of passing this poor object's reference around
+  // everywhere
+  TextRenderer text_renderer{renderer};
 
-  Sphere *s1 = new Sphere(1, BIG_MASS);
-  Sphere *s2 = new Sphere(1, SMALL_MASS);
+  // TODO eventually needs to be moved to new class holding all the windows
+  OneBody one_body;
 
-  std::vector<TextInput *> inputs1;
-  std::vector<TextInput *> inputs2;
-
-  char *ch = (char *)malloc(sizeof(char));
+  // std::vector<TextInput *> inputs2;
 
   if (!window) {
     std::cout << "Error creating window" << SDL_GetError() << std::endl;
@@ -53,7 +47,7 @@ int main(int argc, char *argv[])
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(renderer);
 
-  Menu::loadMenu(renderer, textRenderer);
+  Menu::loadMenu(renderer, text_renderer);
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderDrawLine(renderer, Options[0].x, Options[0].y + 210, Options[0].x + 200,
@@ -107,15 +101,13 @@ int main(int argc, char *argv[])
             currScreen = selectedScreen;
             switch (currScreen) {
             case 1:
-              inputs1 = OneBody::initTextBox();
-              OneBody::initHotbar(renderer, textRenderer, inputs1);
-              OneBody::init(inputs1, renderer, s1, s2);
+              one_body.init(renderer, text_renderer);
               break;
-            case 2:
-              inputs2 = TwoBody::initTextBox();
-              TwoBody::initHotbar(renderer, textRenderer, inputs2);
-              TwoBody::init(inputs2, renderer, s1, s2);
-              break;
+              // case 2:
+              // inputs2 = TwoBody::initTextBox();
+              // TwoBody::initHotbar(renderer, text_renderer, inputs2);
+              // TwoBody::init(inputs2, renderer, s1, s2);
+              // break;
             }
           }
           }
@@ -124,8 +116,7 @@ int main(int argc, char *argv[])
 
       // If not on the menu, do the sim's method continuously
       else if (currScreen == 1) {
-        currScreen = OneBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy,
-                                     renderer, textRenderer, inputs1, s1, s2, &pause);
+        currScreen = one_body.update(keyState, event, renderer, text_renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
         if (!currScreen) {
@@ -136,44 +127,40 @@ int main(int argc, char *argv[])
                              Options[(selectedScreen + 1) % 2].y + 210);
         }
       }
-      else if (currScreen == 2) {
-        currScreen = TwoBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy,
-                                     renderer, textRenderer, inputs2, s1, s2);
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+      // else if (currScreen == 2) {
+      //   currScreen = TwoBody::update(ch, tabCycle, keyState, event, &cameraOffx, &cameraOffy,
+      //                                renderer, text_renderer, inputs2, s1, s2);
+      //   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-        if (!currScreen) {
-          SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-          SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x,
-                             Options[(selectedScreen + 1) % 2].y + 210,
-                             Options[(selectedScreen + 1) % 2].x + 200,
-                             Options[(selectedScreen + 1) % 2].y + 210);
-        }
-      }
+      //   if (!currScreen) {
+      //     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+      //     SDL_RenderDrawLine(renderer, Options[(selectedScreen + 1) % 2].x,
+      //                        Options[(selectedScreen + 1) % 2].y + 210,
+      //                        Options[(selectedScreen + 1) % 2].x + 200,
+      //                        Options[(selectedScreen + 1) % 2].y + 210);
+      //   }
+      // }
     }
 
-    // Now update our calcs
+    // TODO This NEEDS to be moved in the fucking one body window
+    // Same as all the run shit
     switch (currScreen) {
     case 1: {
-      if (pause) {
+      if (one_body.pause_) {
         continue;
       }
 
-      OneBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
+      one_body.calc(renderer);
       break;
     }
-    case 2: {
-      TwoBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
-      break;
-    }
+      // case 2: {
+      // TwoBody::calc(s1, s2, renderer, cameraOffx, cameraOffy);
+      // break;
+      // }
     }
     SDL_RenderPresent(renderer);
   }
   SDL_DestroyWindow(window);
-  free(ch);
-  free(tabCycle);
-  delete textRenderer;
-  delete s1;
-  delete s2;
   SDL_Quit();
 
   return EXIT_SUCCESS;
