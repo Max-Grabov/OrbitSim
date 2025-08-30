@@ -64,6 +64,8 @@ void Application::run()
   {
     SDL_PollEvent(&event_);
     handleEvents();
+
+    if(!running_) break;
     SDL_RenderPresent(renderer_);
   }
 }
@@ -132,6 +134,7 @@ void Application::handleWindowChange()
   switch(selected_screen_)
   {
     case 0:
+      one_body_.init(renderer_, text_renderer_);
       one_body_.run(renderer_, text_renderer_, keystate_);
       break;
   }

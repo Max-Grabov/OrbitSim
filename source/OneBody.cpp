@@ -19,6 +19,8 @@ void OneBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, con
     {
       calc(renderer);
     }
+
+    SDL_RenderPresent(renderer);
   }
   std::cout << "leaving\n";
 }
@@ -187,6 +189,8 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
 
 void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 {
+  std::cout << "initing onebody hotbar\n";
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   text_renderer.render(renderer, "Mass One(Tg)", 10, 20);
   text_renderer.render(renderer, "Mass Two(Gg)", 10, 60);
 
@@ -210,6 +214,7 @@ void OneBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_render
 
 void OneBody::initData(SDL_Renderer *renderer)
 {
+  std::cout << "initData OneBody\n";
   sphere_one_.mass_ = BIG_MASS;
   sphere_two_.mass_ = SMALL_MASS;
 
