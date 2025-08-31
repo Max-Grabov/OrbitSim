@@ -3,7 +3,6 @@
 #include "Object.hpp"
 #include <SDL2/SDL.h>
 
-#include <SDL2/SDL_rect.h>
 #include <cmath>
 
 #define HOTBAR_H 100
@@ -18,6 +17,8 @@ public:
   ~Sphere();
 
   Sphere(Sphere &&other);
+
+  Sphere &operator=(Sphere &&other);
 
   Sphere(const Sphere &other);
 

@@ -1,5 +1,8 @@
 #include "Sphere.hpp"
 #include <SDL2/SDL_rect.h>
+#include <algorithm>
+#include <cmath>
+#include <utility>
 
 namespace OrbitSim
 {
@@ -14,6 +17,17 @@ Sphere::Sphere(Sphere &&other) : radius_(std::move(other.radius_)), mass_(std::m
 {
   points_ = other.points_;
   other.points_ = nullptr;
+}
+
+Sphere &Sphere::operator=(Sphere &&other)
+{
+  radius_ = std::move(other.radius_);
+  mass_ = std::move(other.mass_);
+
+  points_ = other.points_;
+  other.points_ = nullptr;
+
+  return *this;
 }
 
 Sphere::Sphere(const Sphere &other) : radius_(other.radius_), mass_(other.mass_)
