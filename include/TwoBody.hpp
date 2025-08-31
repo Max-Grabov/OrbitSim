@@ -1,27 +1,50 @@
 #pragma once
 
 #include "Init.hpp"
-#include "Menu.hpp"
 #include "Sphere.hpp"
 #include "TextInput.hpp"
 #include "TextRenderer.hpp"
+#include "Window.hpp"
 
-class TwoBody
+#include <array>
+
+// TODO Clearly every method includes the renderer, once again reminder to make a fucking wrapper
+// for it Also, make these windows have a text renderer (static maybe?) member since it is so
+// commonly used
+namespace OrbitSim
+{
+class TwoBody : public Window
 {
 public:
-  static void init(std::vector<TextInput *> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere *s2);
+  void run(SDL_Renderer *renderer, const TextRenderer &text_renderer,
+           const Uint8 *keystate) override;
 
-  static void initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer,
-                         std::vector<TextInput *> inputs);
+  void init(SDL_Renderer *renderer, const TextRenderer &text_renderer) override;
 
-  static std::vector<TextInput *> initTextBox();
+  void exit(SDL_Renderer *renderer) override;
 
-  static void calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int cameraOffy);
+private:
+  Sphere sphere_one_, sphere_two_;
+  int camera_offset_x_{0}, camera_offset_y_{0};
+  std::array<TextInput, 6> textboxes_;
+  std::array<SDL_Rect, 6> textbox_borders_{
+      SPHERE_ONE_MASS_BORDER,       SPHERE_TWO_MASS_BORDER,       SPHERE_ONE_VELOCITY_X_BORDER,
+      SPHERE_ONE_VELOCITY_Y_BORDER, SPHERE_TWO_VELOCITY_X_BORDER, SPHERE_TWO_VELOCITY_Y_BORDER};
+  int selected_box_{0};
+  bool running_{false};
+  SDL_Event current_event_;
+  bool pause_{false};
 
-  static void reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy,
-                    std::vector<TextInput *> inputs);
+  void handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
+                    const TextRenderer &text_renderer, const Uint8 *keystate);
 
-  static int update(char *ch, int *tabCycle, const uint8 *keystate, SDL_Event e, int *cameraOffx,
-                    int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer,
-                    std::vector<TextInput *> inputs, Sphere *s1, Sphere *s2);
+  void handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer,
+                           const TextRenderer &text_renderer, const Uint8 *keystate);
+
+  void initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer);
+
+  void initData(SDL_Renderer *renderer);
+
+  void calc(SDL_Renderer *renderer);
 };
+} // namespace OrbitSim

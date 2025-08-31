@@ -14,6 +14,5 @@ int main(int argc, char *argv[])
   }
 
   application.run();
-  std::cout << "exiting safely\n";
   return EXIT_SUCCESS;
 }

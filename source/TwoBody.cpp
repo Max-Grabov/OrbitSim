@@ -1,347 +1,363 @@
-// #include "TwoBody.hpp"
-
-// void TwoBody::init(std::vector<TextInput *> inputs, SDL_Renderer *renderer, Sphere *s1, Sphere
-// *s2)
-// {
-
-//   // Init stats
-//   s1->radius = 60;
-//   s2->radius = 40;
-
-//   s1->position.x = 200;
-//   s1->position.y = -30 + HOTBAR_H;
-
-//   s2->position.x = -200;
-//   s2->position.y = 100 + HOTBAR_H;
-
-//   s2->velocity = {inputs.at(2)->getText() == "" ? 120 : std::stod(inputs.at(2)->getText(),
-//   nullptr),
-//                   inputs.at(3)->getText() == "" ? 430 : std::stod(inputs.at(3)->getText(),
-//                   nullptr), 100};
-
-//   s1->velocity = {
-//       inputs.at(2)->getText() == "" ? -600 : std::stod(inputs.at(2)->getText(), nullptr),
-//       inputs.at(3)->getText() == "" ? -193 : std::stod(inputs.at(3)->getText(), nullptr), 0};
-
-//   s1->Draw(renderer, OFFSET_X, OFFSET_Y);
-//   s2->Draw(renderer, OFFSET_X, OFFSET_Y);
-
-//   SDL_RenderPresent(renderer);
-// }
-
-// void TwoBody::initHotbar(SDL_Renderer *renderer, TextRenderer *tRenderer,
-//                          std::vector<TextInput *> inputs)
-// {
-//   tRenderer->render(renderer, "Mass One(Tg)", 10, 20);
-//   tRenderer->render(renderer, "Mass Two(Gg)", 10, 60);
-
-//   tRenderer->render(renderer, "Velocity One X(m/s)", 245, 20);
-//   tRenderer->render(renderer, "Velocity One Y(m/s)", 245, 60);
-
-//   tRenderer->render(renderer, "Velocity Two X(m/s)", 538, 20);
-//   tRenderer->render(renderer, "Velocity Two Y(m/s)", 538, 60);
-
-//   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+#include "TwoBody.hpp"
+#include "Init.hpp"
 
-//   SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2 * SCREEN_WIDTH, HOTBAR_H);
-
-//   SDL_RenderDrawLine(renderer, inputs.at(0)->getBorder().x,
-//                      inputs.at(0)->getBorder().y + +inputs.at(0)->getBorder().h + 3,
-//                      inputs.at(0)->getBorder().x + inputs.at(0)->getBorder().w,
-//                      inputs.at(0)->getBorder().y + +inputs.at(0)->getBorder().h + 3);
-
-//   for (auto const &i : inputs) {
-//     i->init(renderer);
-//   }
-// }
-
-// std::vector<TextInput *> TwoBody::initTextBox()
-// {
-//   std::vector<TextInput *> inputs;
-//   TextInput *massObject1 = new TextInput();
-//   TextInput *massObject2 = new TextInput();
-//   TextInput *velObject1 = new TextInput();
-//   TextInput *velObject2 = new TextInput();
-//   TextInput *velObject3 = new TextInput();
-//   TextInput *velObject4 = new TextInput();
-
-//   inputs.push_back(massObject1);
-//   inputs.push_back(massObject2);
-//   inputs.push_back(velObject1);
-//   inputs.push_back(velObject2);
-//   inputs.push_back(velObject3);
-//   inputs.push_back(velObject4);
-
-//   massObject1->setBorder(oneInputMass);
-//   massObject2->setBorder(twoInputMass);
-//   velObject1->setBorder(oneInputVel);
-//   velObject2->setBorder(twoInputVel);
-//   velObject3->setBorder(threeInputVel);
-//   velObject4->setBorder(fourInputVel);
-
-//   return inputs;
-// }
-
-// void TwoBody::calc(Sphere *s1, Sphere *s2, SDL_Renderer *renderer, int cameraOffx, int
-// cameraOffy)
-// {
-//   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-//   SDL_RenderFillRect(renderer, &Screen);
-
-//   // Setup math
-//   double rad = (Object::distance(*s1, *s2) - s1->radius - s2->radius) / PIXELCONVERT;
-
-//   if (rad < 1e-6)
-//     rad = 1e-6;
-
-//   double forceG = (G * s2->mass * s1->mass) / (pow(rad, 2));
-
-//   // Use theta from -pi to pi
-//   double theta;
-
-//   if (s2->position.x == s1->position.x) {
-//     theta = (s2->position.y > s1->position.y) ? M_PI / 2 : -M_PI / 2;
-//   }
-//   else {
-//     theta = atan2(1.0 * (s2->position.y - s1->position.y), 1.0 * (s2->position.x -
-//     s1->position.x));
-//   }
-
-//   vector oldDistance = s2->position;
-
-//   // Kinematics
-//   double FxG = -cos(theta) * forceG;
-//   double FyG = -sin(theta) * forceG;
-
-//   s2->position.x +=
-//       0.5 * PIXELCONVERT * s2->acceleration.x * FRAME * FRAME + s2->velocity.x * FRAME;
-//   s2->position.y +=
-//       0.5 * PIXELCONVERT * s2->acceleration.y * FRAME * FRAME + s2->velocity.y * FRAME;
-
-//   s1->position.x +=
-//       0.5 * PIXELCONVERT * s1->acceleration.x * FRAME * FRAME + s1->velocity.x * FRAME;
-//   s1->position.y +=
-//       0.5 * PIXELCONVERT * s1->acceleration.y * FRAME * FRAME + s1->velocity.y * FRAME;
-
-//   // Look at next fram for more accurate data
-//   double newTheta = atan2(s2->position.y - s1->position.y, s2->position.x - s1->position.x);
-
-//   double newRad = Object::distance(*s1, *s2) - s1->radius - s2->radius;
-//   double newFG = (G * s2->mass * s1->mass) / (newRad * newRad);
-
-//   double newFXG = -cos(newTheta) * newFG;
-//   double newFYG = -sin(newTheta) * newFG;
-
-//   double newAccelx = newFXG / s2->mass;
-//   double newAccely = newFYG / s2->mass;
-
-//   double newAccelx2 = -newFXG / s2->mass;
-//   double newAccely2 = -newFYG / s2->mass;
-
-//   s2->velocity.x += 0.5 * (s2->acceleration.x + newAccelx) * FRAME;
-//   s2->velocity.y += 0.5 * (s2->acceleration.y + newAccely) * FRAME;
-
-//   s1->velocity.x += 0.5 * (s2->acceleration.x + newAccelx2) * FRAME;
-//   s1->velocity.y += 0.5 * (s2->acceleration.y + newAccely2) * FRAME;
-
-//   s2->acceleration.x = newAccelx;
-//   s2->acceleration.y = newAccely;
-
-//   s1->acceleration.x = -newAccelx;
-//   s1->acceleration.y = -newAccely;
-
-//   SDL_Delay(100);
-
-//   // std::cout << "pos 1 " << s1->position.x << " " << s1->position.y <<
-//   // std::endl; std::cout << "pos 2 " << s2->position.x << " " << s2->position.y
-//   // << std::endl;
-
-//   // Draw the new positions
-//   s1->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
-//   s2->Draw(renderer, OFFSET_X + cameraOffx, OFFSET_Y + cameraOffy);
-// }
-
-// void TwoBody::reset(Sphere *s1, Sphere *s2, int *tabCycle, int *cameraOffx, int *cameraOffy,
-//                     std::vector<TextInput *> inputs)
-// {
-//   s1->mass = BIG_MASS;
-//   s2->mass = SMALL_MASS;
-//   *tabCycle = 0;
-//   *cameraOffx = *cameraOffy = 0;
-//   delete inputs[0];
-//   delete inputs[1];
-//   delete inputs[2];
-//   delete inputs[3];
-//   delete inputs[4];
-//   delete inputs[5];
-// }
-
-// int TwoBody::update(char *ch, int *tabCycle, const Uint8 *keyState, SDL_Event e, int *cameraOffx,
-//                     int *cameraOffy, SDL_Renderer *renderer, TextRenderer *tRenderer,
-//                     std::vector<TextInput *> inputs, Sphere *s1, Sphere *s2)
-// {
-
-//   vectord v;
-//   std::string oneChange;
-
-//   switch (e.type) {
-//   case SDL_KEYDOWN:
-//     switch (e.key.keysym.scancode) {
-//     case SDL_SCANCODE_ESCAPE: {
-//       reset(s1, s2, tabCycle, cameraOffx, cameraOffy, inputs);
-//       SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-//       SDL_RenderClear(renderer);
-
-//       Menu::loadMenu(renderer, tRenderer);
-//       return 0;
-//     }
-
-//     case SDL_SCANCODE_TAB: {
-//       // Clear last line
-//       SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-//       SDL_RenderDrawLine(
-//           renderer, inputs.at(*tabCycle)->getBorder().x,
-//           inputs.at(*tabCycle)->getBorder().y + +inputs.at(*tabCycle)->getBorder().h + 3,
-//           inputs.at(*tabCycle)->getBorder().x + inputs.at(*tabCycle)->getBorder().w,
-//           inputs.at(*tabCycle)->getBorder().y + +inputs.at(*tabCycle)->getBorder().h + 3);
-
-//       *tabCycle = (*tabCycle + 1) % 6;
-
-//       // Add new line
-//       SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-//       SDL_RenderDrawLine(
-//           renderer, inputs.at(*tabCycle)->getBorder().x,
-//           inputs.at(*tabCycle)->getBorder().y + +inputs.at(*tabCycle)->getBorder().h + 3,
-//           inputs.at(*tabCycle)->getBorder().x + inputs.at(*tabCycle)->getBorder().w,
-//           inputs.at(*tabCycle)->getBorder().y + +inputs.at(*tabCycle)->getBorder().h + 3);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_A: {
-//       oneChange = inputs.at(*tabCycle)->getText();
-
-//       if (oneChange == "") {
-//         break;
-//       }
-
-//       // Get values
-//       switch (*tabCycle) {
-//       case 0:
-//         s1->mass = 1000000000000 * std::stod(oneChange, nullptr);
-//         break;
-//       case 1:
-//         s2->mass = 1000000000 * std::stod(oneChange, nullptr);
-//         break;
-//       case 2:
-//         v = {std::stod(oneChange, nullptr), s1->velocity.y, 0};
-//         s1->setVelocity(v);
-//         break;
-//       case 3:
-//         v = {s1->velocity.x, std::stod(oneChange, nullptr), 0};
-//         s1->setVelocity(v);
-//         break;
-//       case 4:
-//         v = {std::stod(oneChange, nullptr), s2->velocity.y, 0};
-//         s2->setVelocity(v);
-//         break;
-//       case 5:
-//         v = {s2->velocity.x, std::stod(oneChange, nullptr), 0};
-//         s2->setVelocity(v);
-//         break;
-//       }
-//       break;
-//     }
-
-//       // case SDL_SCANCODE_P:
-//       // {
-//       //     *pause = !*pause;
-//       //     break;
-//       // }
-
-//     case SDL_SCANCODE_0: {
-//       *ch = '0';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_1: {
-//       *ch = '1';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_2: {
-//       *ch = '2';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_3: {
-//       *ch = '3';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_4: {
-//       *ch = '4';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_5: {
-//       *ch = '5';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_6: {
-//       *ch = '6';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_7: {
-//       *ch = '7';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_8: {
-//       *ch = '8';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_9: {
-//       *ch = '9';
-//       inputs.at(*tabCycle)->type(tRenderer, renderer, ch);
-//       break;
-//     }
-
-//     case SDL_SCANCODE_BACKSPACE: {
-//       inputs.at(*tabCycle)->deleteChar(tRenderer, renderer);
-//       break;
-//     }
-
-//     default:
-//       break;
-//     }
-
-//     if (keyState[SDL_SCANCODE_UP]) {
-//       *cameraOffy -= 5;
-//     }
-//     if (keyState[SDL_SCANCODE_DOWN]) {
-//       *cameraOffy += 5;
-//     }
-//     if (keyState[SDL_SCANCODE_RIGHT]) {
-//       *cameraOffx += 5;
-//     }
-//     if (keyState[SDL_SCANCODE_LEFT]) {
-//       *cameraOffx -= 5;
-//     }
-//     return 2;
-
-//   default:
-//     return 2;
-//   }
-// }
+namespace OrbitSim
+{
+void TwoBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
+{
+  initHotbar(renderer, text_renderer);
+  initData(renderer);
+}
+
+void TwoBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
+{
+  while(running_)
+  {
+    while(SDL_PollEvent(&current_event_))
+    {
+      handleEvents(current_event_, renderer, text_renderer, keystate);
+    }
+
+    if(!pause_)
+    {
+      calc(renderer);
+    }
+
+    SDL_RenderPresent(renderer);
+  }
+}
+
+void TwoBody::exit(SDL_Renderer *renderer)
+{
+  sphere_one_.mass_ = BIG_MASS;
+  sphere_two_.mass_ = SMALL_MASS;
+  selected_box_ = 0;
+  camera_offset_x_ = camera_offset_y_ = 0;
+
+  for(size_t i = 0; i < 6; ++i)
+  {
+    textboxes_[i].reset();
+  }
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  SDL_RenderClear(renderer);
+
+  running_ = false;
+}
+
+void TwoBody::initData(SDL_Renderer *renderer)
+{
+  sphere_one_.mass_ = BIG_MASS;
+  sphere_two_.mass_ = SMALL_MASS;
+
+  sphere_one_.radius_ = 60;
+  sphere_two_.radius_ = 40;
+
+  sphere_one_.position_.x_ = 200;
+  sphere_one_.position_.y_ = -30 + HOTBAR_H;
+
+  sphere_two_.position_.x_ = -200;
+  sphere_two_.position_.y_ = 100 + HOTBAR_H;
+
+  sphere_one_.acceleration_.x_ = sphere_one_.acceleration_.y_ = sphere_two_.acceleration_.x_ =
+      sphere_two_.acceleration_.y_ = 0;
+
+  sphere_two_.setVelocity(
+      {textboxes_[2].getText() == "" ? 120 : std::stod(textboxes_[2].getText(), nullptr),
+       textboxes_[3].getText() == "" ? 430 : std::stod(textboxes_[3].getText(), nullptr), 0});
+
+  sphere_two_.setVelocity(
+      {textboxes_[4].getText() == "" ? -600 : std::stod(textboxes_[4].getText(), nullptr),
+       textboxes_[5].getText() == "" ? -193 : std::stod(textboxes_[5].getText(), nullptr), 0});
+
+  sphere_one_.Draw(renderer, OFFSET_X, OFFSET_Y);
+  sphere_two_.Draw(renderer, OFFSET_X, OFFSET_Y);
+
+  running_ = true;
+
+  SDL_RenderPresent(renderer);
+}
+
+void TwoBody::initHotbar(SDL_Renderer *renderer, const TextRenderer &text_renderer)
+{
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  text_renderer.render(renderer, "Mass One(Tg)", 10, 20);
+  text_renderer.render(renderer, "Mass Two(Gg)", 10, 60);
+
+  text_renderer.render(renderer, "Velocity One X(m/s)", 245, 20);
+  text_renderer.render(renderer, "Velocity One Y(m/s)", 245, 60);
+
+  text_renderer.render(renderer, "Velocity Two X(m/s)", 538, 20);
+  text_renderer.render(renderer, "Velocity Two Y(m/s)", 538, 60);
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+  SDL_RenderDrawLine(renderer, 0, HOTBAR_H, 2 * SCREEN_WIDTH, HOTBAR_H);
+
+  const auto initial_border = textboxes_[0].getBorder();
+
+  SDL_RenderDrawLine(renderer, initial_border.x, initial_border.y + initial_border.h + 3,
+                     initial_border.x + initial_border.w, initial_border.y + initial_border.h + 3);
+
+  for(size_t i = 0; i < 6; ++i)
+  {
+    textboxes_[i].setBorder(textbox_borders_[i]);
+    textboxes_[i].init(renderer);
+  }
+}
+
+void TwoBody::handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
+                           const TextRenderer &text_renderer, const Uint8 *keystate)
+{
+  switch(event.type)
+  {
+  case SDL_KEYDOWN:
+    handleKeyboardInput(event, renderer, text_renderer, keystate);
+    break;
+  }
+}
+
+void TwoBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer,
+                                  const TextRenderer &text_renderer, const Uint8 *keystate)
+{
+  const auto border = textboxes_.at(selected_box_).getBorder();
+
+  std::string new_velocity_value;
+
+  switch(event.key.keysym.scancode)
+  {
+  case SDL_SCANCODE_ESCAPE:
+  {
+    exit(renderer);
+    return;
+  }
+
+  case SDL_SCANCODE_TAB:
+  {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, border.x, border.y + border.h + 3, border.x + border.w,
+                       border.y + border.h + 3);
+
+    selected_box_ = (selected_box_ + 1) % 6;
+
+    const auto new_border = textboxes_.at(selected_box_).getBorder();
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawLine(renderer, new_border.x, new_border.y + new_border.h + 3,
+                       new_border.x + new_border.w, new_border.y + new_border.h + 3);
+    break;
+  }
+
+  case SDL_SCANCODE_A:
+  {
+    new_velocity_value = textboxes_.at(selected_box_).getText();
+
+    if(new_velocity_value == "")
+    {
+      break;
+    }
+
+    // TODO This is utter dogshit change this later
+    switch(selected_box_)
+    {
+    case 0:
+      sphere_one_.mass_ = 1000000000000 * std::stod(new_velocity_value, nullptr);
+      break;
+    case 1:
+      sphere_two_.mass_ = 1000000000 * std::stod(new_velocity_value, nullptr);
+      break;
+    case 2:
+      sphere_one_.setVelocity(
+          {std::stod(new_velocity_value, nullptr), sphere_one_.velocity_.y_, 0});
+      break;
+    case 3:
+      sphere_one_.setVelocity(
+          {sphere_one_.velocity_.x_, std::stod(new_velocity_value, nullptr), 0});
+      break;
+    case 4:
+      sphere_two_.setVelocity(
+          {std::stod(new_velocity_value, nullptr), sphere_two_.velocity_.y_, 0});
+      break;
+    case 5:
+      sphere_two_.setVelocity(
+          {sphere_two_.velocity_.x_, std::stod(new_velocity_value, nullptr), 0});
+    }
+    break;
+  }
+
+  case SDL_SCANCODE_P:
+  {
+    pause_ = !pause_;
+    break;
+  }
+
+  case SDL_SCANCODE_0:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '0');
+    break;
+  }
+
+  case SDL_SCANCODE_1:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '1');
+    break;
+  }
+
+  case SDL_SCANCODE_2:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '2');
+    break;
+  }
+
+  case SDL_SCANCODE_3:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '3');
+    break;
+  }
+
+  case SDL_SCANCODE_4:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '4');
+    break;
+  }
+
+  case SDL_SCANCODE_5:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '5');
+    break;
+  }
+
+  case SDL_SCANCODE_6:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '6');
+    break;
+  }
+
+  case SDL_SCANCODE_7:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '7');
+    break;
+  }
+
+  case SDL_SCANCODE_8:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '8');
+    break;
+  }
+
+  case SDL_SCANCODE_9:
+  {
+    textboxes_.at(selected_box_).type(text_renderer, renderer, '9');
+    break;
+  }
+
+  case SDL_SCANCODE_BACKSPACE:
+  {
+    textboxes_.at(selected_box_).deleteChar(text_renderer, renderer);
+    break;
+  }
+
+  default:
+    break;
+  }
+
+  if(keystate[SDL_SCANCODE_UP])
+  {
+    camera_offset_y_ -= 5;
+  }
+  if(keystate[SDL_SCANCODE_DOWN])
+  {
+    camera_offset_y_ += 5;
+  }
+  if(keystate[SDL_SCANCODE_RIGHT])
+  {
+    camera_offset_x_ += 5;
+  }
+  if(keystate[SDL_SCANCODE_LEFT])
+  {
+    camera_offset_x_ -= 5;
+  }
+}
+
+void TwoBody::calc(SDL_Renderer *renderer)
+{
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  SDL_RenderFillRect(renderer, &Screen);
+
+  double distance_from_surface =
+      (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
+      PIXELCONVERT;
+
+  if(distance_from_surface < 1e-6)
+    distance_from_surface = 1e-6;
+
+  double force_gravity =
+      (G * sphere_two_.mass_ * sphere_one_.mass_) / (pow(distance_from_surface, 2));
+
+  // Use theta from -pi to pi
+  double theta;
+
+  if(sphere_two_.position_.x_ == sphere_one_.position_.x_)
+  {
+    theta = (sphere_two_.position_.y_ > sphere_one_.position_.y_) ? M_PI / 2 : -M_PI / 2;
+  }
+  else
+  {
+    theta = atan2(1.0 * (sphere_two_.position_.y_ - sphere_one_.position_.y_),
+                  1.0 * (sphere_two_.position_.x_ - sphere_one_.position_.x_));
+  }
+
+  Vector old_position = sphere_two_.position_;
+
+  double force_gravity_x = -cos(theta) * force_gravity;
+  double force_gravity_y = -sin(theta) * force_gravity;
+
+  sphere_two_.position_.x_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.x_ * FRAME * FRAME +
+                              sphere_two_.velocity_.x_ * FRAME;
+  sphere_two_.position_.y_ += 0.5 * PIXELCONVERT * sphere_two_.acceleration_.y_ * FRAME * FRAME +
+                              sphere_two_.velocity_.y_ * FRAME;
+  sphere_one_.position_.x_ += 0.5 * PIXELCONVERT * sphere_one_.acceleration_.x_ * FRAME * FRAME +
+                              sphere_one_.velocity_.x_ * FRAME;
+  sphere_one_.position_.y_ += 0.5 * PIXELCONVERT * sphere_one_.acceleration_.y_ * FRAME * FRAME +
+                              sphere_one_.velocity_.y_ * FRAME;
+
+  double new_theta = atan2(sphere_two_.position_.y_ - sphere_one_.position_.y_,
+                           sphere_two_.position_.x_ - sphere_one_.position_.x_);
+
+  double new_distance_from_surface =
+      Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_;
+  double new_force_gravity = (G * sphere_two_.mass_ * sphere_one_.mass_) /
+                             (new_distance_from_surface * new_distance_from_surface);
+
+  double new_force_gravity_x = -cos(new_theta) * new_force_gravity;
+  double new_force_gravity_y = -sin(new_theta) * new_force_gravity;
+
+  double new_acceleration_x_sphere_two = new_force_gravity_x / sphere_two_.mass_;
+  double new_acceleration_y_sphere_two = new_force_gravity_y / sphere_two_.mass_;
+
+  double new_acceleration_x_sphere_one = -new_force_gravity_x / sphere_one_.mass_;
+  double new_acceleration_y_sphere_one = -new_force_gravity_y / sphere_one_.mass_;
+
+  // Try to counteract error cummulation via looking at next accel
+  sphere_two_.velocity_.x_ +=
+      0.5 * (sphere_two_.acceleration_.x_ + new_acceleration_x_sphere_two) * FRAME;
+  sphere_two_.velocity_.y_ +=
+      0.5 * (sphere_two_.acceleration_.y_ + new_acceleration_y_sphere_two) * FRAME;
+
+  sphere_one_.velocity_.x_ +=
+      0.5 * (sphere_one_.acceleration_.x_ + new_acceleration_x_sphere_one) * FRAME;
+  sphere_one_.velocity_.y_ +=
+      0.5 * (sphere_one_.acceleration_.y_ + new_acceleration_y_sphere_one) * FRAME;
+
+  sphere_two_.acceleration_.x_ = new_acceleration_x_sphere_two;
+  sphere_two_.acceleration_.y_ = new_acceleration_y_sphere_two;
+
+  sphere_one_.acceleration_.x_ = new_acceleration_x_sphere_one;
+  sphere_one_.acceleration_.y_ = new_acceleration_y_sphere_one;
+
+  SDL_Delay(100);
+
+  sphere_one_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
+  sphere_two_.Draw(renderer, OFFSET_X + camera_offset_x_, OFFSET_Y + camera_offset_y_);
+}
+} // namespace OrbitSim

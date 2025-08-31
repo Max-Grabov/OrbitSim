@@ -42,34 +42,20 @@ void Application::init()
     throw std::exception();
   }
 
-  // Initialize the menu screen
-  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-  SDL_RenderDrawRect(renderer_, &Options[0]);
-  text_renderer_.render(renderer_, "One Body", SCREEN_WIDTH / 2 - 45 - 150, SCREEN_HEIGHT / 2 - 50);
-  text_renderer_.render(renderer_, "Simulation", SCREEN_WIDTH / 2 - 43 - 150,
-                        SCREEN_HEIGHT / 2 - 25);
-
-  SDL_RenderDrawRect(renderer_, &Options[1]);
-  text_renderer_.render(renderer_, "Two Body", SCREEN_WIDTH / 2 - 45 + 150, SCREEN_HEIGHT / 2 - 50);
-  text_renderer_.render(renderer_, "Simulation", SCREEN_WIDTH / 2 - 43 + 150,
-                        SCREEN_HEIGHT / 2 - 25);
-
-  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderDrawLine(renderer_, Options[0].x, Options[0].y + 210, Options[0].x + 200,
-                     Options[0].y + 210);
+  renderMenu();
 }
 
 void Application::run()
 {
   while(running_)
   {
-    SDL_PollEvent(&event_);
-    handleEvents();
+    while(SDL_PollEvent(&event_))
+    {
+      handleEvents();
+    }
 
     if(!running_)
       break;
-    SDL_RenderPresent(renderer_);
   }
 }
 
@@ -115,12 +101,15 @@ void Application::handleKeyboardInput()
     SDL_RenderDrawLine(renderer_, Options[selected_screen_].x, Options[selected_screen_].y + 210,
                        Options[selected_screen_].x + 200, Options[selected_screen_].y + 210);
 
+    SDL_RenderPresent(renderer_);
+
     break;
 
   case SDL_SCANCODE_S:
     SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer_);
     handleWindowChange();
+    renderMenu();
     break;
 
   default:
@@ -136,6 +125,32 @@ void Application::handleWindowChange()
     one_body_.init(renderer_, text_renderer_);
     one_body_.run(renderer_, text_renderer_, keystate_);
     break;
+  case 1:
+    two_body_.init(renderer_, text_renderer_);
+    two_body_.run(renderer_, text_renderer_, keystate_);
+    break;
   }
+}
+
+void Application::renderMenu()
+{
+  SDL_SetRenderDrawColor(renderer_, 255, 255, 255, SDL_ALPHA_OPAQUE);
+  SDL_RenderClear(renderer_);
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+  SDL_RenderDrawRect(renderer_, &Options[0]);
+  text_renderer_.render(renderer_, "One Body", SCREEN_WIDTH / 2 - 45 - 150, SCREEN_HEIGHT / 2 - 50);
+  text_renderer_.render(renderer_, "Simulation", SCREEN_WIDTH / 2 - 43 - 150,
+                        SCREEN_HEIGHT / 2 - 25);
+
+  SDL_RenderDrawRect(renderer_, &Options[1]);
+  text_renderer_.render(renderer_, "Two Body", SCREEN_WIDTH / 2 - 45 + 150, SCREEN_HEIGHT / 2 - 50);
+  text_renderer_.render(renderer_, "Simulation", SCREEN_WIDTH / 2 - 43 + 150,
+                        SCREEN_HEIGHT / 2 - 25);
+
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_RenderDrawLine(renderer_, Options[selected_screen_].x, Options[selected_screen_].y + 210,
+                     Options[selected_screen_].x + 200, Options[selected_screen_].y + 210);
+  SDL_RenderPresent(renderer_);
 }
 } // namespace OrbitSim

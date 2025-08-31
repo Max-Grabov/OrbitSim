@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OneBody.hpp"
+#include "TwoBody.hpp"
 #include <cstdint>
 
 namespace OrbitSim
@@ -16,6 +17,7 @@ public:
 
 private:
   OneBody one_body_;
+  TwoBody two_body_;
   TextRenderer text_renderer_;
 
   SDL_Renderer *renderer_{nullptr};
@@ -30,5 +32,7 @@ private:
   void handleKeyboardInput();
 
   void handleWindowChange();
+
+  void renderMenu();
 };
 } // namespace OrbitSim

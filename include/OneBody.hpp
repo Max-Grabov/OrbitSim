@@ -16,9 +16,6 @@ namespace OrbitSim
 class OneBody : public Window
 {
 public:
-  // TODO Pause should be moved back to private
-  bool pause_{false};
-
   void run(SDL_Renderer *renderer, const TextRenderer &text_renderer,
            const Uint8 *keystate) override;
 
@@ -36,6 +33,7 @@ private:
   int selected_box_{0};
   bool running_{false};
   SDL_Event current_event_;
+  bool pause_{false};
 
   void handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
                     const TextRenderer &text_renderer, const Uint8 *keystate);

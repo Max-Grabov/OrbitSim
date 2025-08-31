@@ -8,13 +8,14 @@ void OneBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
   initData(renderer);
 }
 
-// TODO thanks sdl for not using uint8_t
 void OneBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, const Uint8 *keystate)
 {
   while(running_)
   {
-    SDL_PollEvent(&current_event_);
-    handleEvents(current_event_, renderer, text_renderer, keystate);
+    while(SDL_PollEvent(&current_event_))
+    {
+      handleEvents(current_event_, renderer, text_renderer, keystate);
+    }
 
     if(!pause_)
     {
@@ -81,7 +82,6 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
 
     const auto new_border = textboxes_.at(selected_box_).getBorder();
 
-    // Add new line
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderDrawLine(renderer, new_border.x, new_border.y + new_border.h + 3,
                        new_border.x + new_border.w, new_border.y + new_border.h + 3);
@@ -123,7 +123,6 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
     break;
   }
 
-  // TODO Look into making this if else and not spam this
   case SDL_SCANCODE_0:
   {
     textboxes_.at(selected_box_).type(text_renderer, renderer, '0');
@@ -192,24 +191,23 @@ void OneBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
 
   default:
     break;
+  }
 
-    // TODO probably change this
-    if(keystate[SDL_SCANCODE_UP])
-    {
-      camera_offset_y_ -= 5;
-    }
-    if(keystate[SDL_SCANCODE_DOWN])
-    {
-      camera_offset_y_ += 5;
-    }
-    if(keystate[SDL_SCANCODE_RIGHT])
-    {
-      camera_offset_x_ += 5;
-    }
-    if(keystate[SDL_SCANCODE_LEFT])
-    {
-      camera_offset_x_ -= 5;
-    }
+  if(keystate[SDL_SCANCODE_UP])
+  {
+    camera_offset_y_ -= 5;
+  }
+  if(keystate[SDL_SCANCODE_DOWN])
+  {
+    camera_offset_y_ += 5;
+  }
+  if(keystate[SDL_SCANCODE_RIGHT])
+  {
+    camera_offset_x_ += 5;
+  }
+  if(keystate[SDL_SCANCODE_LEFT])
+  {
+    camera_offset_x_ -= 5;
   }
 }
 
@@ -266,13 +264,9 @@ void OneBody::initData(SDL_Renderer *renderer)
 
 void OneBody::calc(SDL_Renderer *renderer)
 {
-
-  // Fill the rectangle every frame with white, effectively clearing this
-  // portion of the screen
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(renderer, &Screen);
 
-  // Setup math
   double distance_from_surface =
       (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
       PIXELCONVERT;
@@ -292,14 +286,12 @@ void OneBody::calc(SDL_Renderer *renderer)
   }
   else
   {
-    // So OP
     theta = atan2(1.0 * (sphere_two_.position_.y_ - sphere_one_.position_.y_),
                   1.0 * (sphere_two_.position_.x_ - sphere_one_.position_.x_));
   }
 
   Vector old_position = sphere_two_.position_;
 
-  // Kinematics
   double force_gravity_x = -cos(theta) * force_gravity;
   double force_gravity_y = -sin(theta) * force_gravity;
 
