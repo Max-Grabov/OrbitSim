@@ -2,9 +2,6 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-#include <iostream>
-#include <vector>
-
 #define SCREEN_WIDTH 1300
 #define SCREEN_HEIGHT 800
 #define OFFSET_X SCREEN_WIDTH / 2

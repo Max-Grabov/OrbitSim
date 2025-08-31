@@ -1,8 +1,11 @@
 #include "TwoBody.hpp"
 #include "Init.hpp"
+#include "Sphere.hpp"
 
 namespace OrbitSim
 {
+TwoBody::TwoBody() : sphere_one_(60, BIG_MASS), sphere_two_(40, SMALL_MASS) {}
+
 void TwoBody::init(SDL_Renderer *renderer, const TextRenderer &text_renderer)
 {
   initHotbar(renderer, text_renderer);
@@ -29,8 +32,6 @@ void TwoBody::run(SDL_Renderer *renderer, const TextRenderer &text_renderer, con
 
 void TwoBody::exit(SDL_Renderer *renderer)
 {
-  sphere_one_.mass_ = BIG_MASS;
-  sphere_two_.mass_ = SMALL_MASS;
   selected_box_ = 0;
   camera_offset_x_ = camera_offset_y_ = 0;
 
@@ -47,12 +48,6 @@ void TwoBody::exit(SDL_Renderer *renderer)
 
 void TwoBody::initData(SDL_Renderer *renderer)
 {
-  sphere_one_.mass_ = BIG_MASS;
-  sphere_two_.mass_ = SMALL_MASS;
-
-  sphere_one_.radius_ = 60;
-  sphere_two_.radius_ = 40;
-
   sphere_one_.position_.x_ = 200;
   sphere_one_.position_.y_ = -30 + HOTBAR_H;
 
@@ -161,10 +156,10 @@ void TwoBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
     switch(selected_box_)
     {
     case 0:
-      sphere_one_.mass_ = 1000000000000 * std::stod(new_velocity_value, nullptr);
+      sphere_one_.setMass(1000000000000 * std::stod(new_velocity_value, nullptr));
       break;
     case 1:
-      sphere_two_.mass_ = 1000000000 * std::stod(new_velocity_value, nullptr);
+      sphere_two_.setMass(1000000000 * std::stod(new_velocity_value, nullptr));
       break;
     case 2:
       sphere_one_.setVelocity(
@@ -281,18 +276,22 @@ void TwoBody::handleKeyboardInput(const SDL_Event &event, SDL_Renderer *renderer
 
 void TwoBody::calc(SDL_Renderer *renderer)
 {
+  const int sphere_one_radius = sphere_one_.getRadius();
+  const int sphere_two_radius = sphere_two_.getRadius();
+  const double sphere_one_mass = sphere_one_.getMass();
+  const double sphere_two_mass = sphere_two_.getMass();
+
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(renderer, &Screen);
 
   double distance_from_surface =
-      (Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_) /
+      (Object::distance(sphere_one_, sphere_two_) - sphere_one_radius - sphere_two_radius) /
       PIXELCONVERT;
 
   if(distance_from_surface < 1e-6)
     distance_from_surface = 1e-6;
 
-  double force_gravity =
-      (G * sphere_two_.mass_ * sphere_one_.mass_) / (pow(distance_from_surface, 2));
+  double force_gravity = (G * sphere_two_mass * sphere_one_mass) / (pow(distance_from_surface, 2));
 
   // Use theta from -pi to pi
   double theta;
@@ -325,18 +324,18 @@ void TwoBody::calc(SDL_Renderer *renderer)
                            sphere_two_.position_.x_ - sphere_one_.position_.x_);
 
   double new_distance_from_surface =
-      Object::distance(sphere_one_, sphere_two_) - sphere_one_.radius_ - sphere_two_.radius_;
-  double new_force_gravity = (G * sphere_two_.mass_ * sphere_one_.mass_) /
+      Object::distance(sphere_one_, sphere_two_) - sphere_one_radius - sphere_two_radius;
+  double new_force_gravity = (G * sphere_two_mass * sphere_one_mass) /
                              (new_distance_from_surface * new_distance_from_surface);
 
   double new_force_gravity_x = -cos(new_theta) * new_force_gravity;
   double new_force_gravity_y = -sin(new_theta) * new_force_gravity;
 
-  double new_acceleration_x_sphere_two = new_force_gravity_x / sphere_two_.mass_;
-  double new_acceleration_y_sphere_two = new_force_gravity_y / sphere_two_.mass_;
+  double new_acceleration_x_sphere_two = new_force_gravity_x / sphere_two_mass;
+  double new_acceleration_y_sphere_two = new_force_gravity_y / sphere_two_mass;
 
-  double new_acceleration_x_sphere_one = -new_force_gravity_x / sphere_one_.mass_;
-  double new_acceleration_y_sphere_one = -new_force_gravity_y / sphere_one_.mass_;
+  double new_acceleration_x_sphere_one = -new_force_gravity_x / sphere_one_mass;
+  double new_acceleration_y_sphere_one = -new_force_gravity_y / sphere_one_mass;
 
   // Try to counteract error cummulation via looking at next accel
   sphere_two_.velocity_.x_ +=

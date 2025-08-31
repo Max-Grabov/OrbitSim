@@ -1,38 +1,92 @@
 #include "Sphere.hpp"
+#include <SDL2/SDL_rect.h>
 
 namespace OrbitSim
 {
-Sphere::Sphere(const double &radius, const double &mass) : radius_(radius), mass_(mass) {}
+Sphere::Sphere(const double &radius, const double &mass) : radius_(radius), mass_(mass)
+{
+  points_ = new SDL_Point[6 * radius_]();
+}
 
-// TODO FIX THIS GARBAGE HOLY SHIT
+Sphere::~Sphere() { delete[] points_; }
+
+Sphere::Sphere(Sphere &&other) : radius_(std::move(other.radius_)), mass_(std::move(other.mass_))
+{
+  points_ = other.points_;
+  other.points_ = nullptr;
+}
+
+Sphere::Sphere(const Sphere &other) : radius_(other.radius_), mass_(other.mass_)
+{
+
+  if(!other.points_)
+  {
+    points_ = nullptr;
+    return;
+  }
+
+  for(size_t i = 0; i < other.radius_ * 6; ++i)
+  {
+    points_[i] = other.points_[i];
+  }
+}
+
+Sphere &Sphere::operator=(const Sphere &other)
+{
+  radius_ = other.radius_;
+  mass_ = other.mass_;
+
+  if(!other.points_)
+  {
+    points_ = nullptr;
+    return *this;
+  }
+
+  for(size_t i = 0; i < other.radius_ * 6; ++i)
+  {
+    points_[i] = other.points_[i];
+  }
+
+  return *this;
+}
+
 void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
                   const int &camera_offset_y) const
 {
+  size_t counter{0};
+
   int sX = radius_;
   int sY = 0;
   int tmp = 1 - radius_;
 
-  std::list<SDL_Point> points;
-
-  SDL_Point p1 = {position_.x_ + camera_offset_x + radius_, -position_.y_ + camera_offset_y};
-  SDL_Point p2 = {position_.x_ + camera_offset_x, position_.y_ + camera_offset_y + radius_};
-  SDL_Point p3 = {position_.x_ + camera_offset_x, -position_.y_ + camera_offset_y - radius_};
-  SDL_Point p4 = {position_.x_ + camera_offset_x - radius_, -position_.y_ + camera_offset_y};
-
+  // Add the 4 points on the NESW of the Sphere
   if(-position_.y_ + camera_offset_y >= HOTBAR_H)
   {
-    points.push_front(p1);
-    points.push_front(p4);
+    points_[counter].x = position_.x_ + camera_offset_x + radius_;
+    points_[counter].y = -position_.y_ + camera_offset_y;
+
+    ++counter;
+
+    points_[counter].x = position_.x_ + camera_offset_x - radius_;
+    points_[counter].y = -position_.y_ + camera_offset_y;
+
+    ++counter;
   }
 
   if(-position_.y_ + camera_offset_y + radius_ >= HOTBAR_H)
   {
-    points.push_front(p2);
+    points_[counter].x = position_.x_ + camera_offset_x;
+    points_[counter].y = position_.y_ + camera_offset_y + radius_;
+
+    ++counter;
   }
 
   if(-position_.y_ + camera_offset_y - radius_ >= HOTBAR_H)
   {
-    points.push_front(p3);
+    points_[counter].x = position_.x_ + camera_offset_x;
+    points_[counter].y = -position_.y_ + camera_offset_y - radius_;
+
+    ++counter;
   }
 
   while(sX > sY)
@@ -54,54 +108,60 @@ void Sphere::Draw(SDL_Renderer *renderer, const int &camera_offset_x,
       break;
     }
 
-    p1 = {sX + position_.x_ + camera_offset_x, sY + -position_.y_ + camera_offset_y};
-    p2 = {-sX + position_.x_ + camera_offset_x, sY + -position_.y_ + camera_offset_y};
-    p3 = {sX + position_.x_ + camera_offset_x, -sY + -position_.y_ + camera_offset_y};
-    p4 = {-sX + position_.x_ + camera_offset_x, -sY + -position_.y_ + camera_offset_y};
-
     if(sY + -position_.y_ + camera_offset_y >= HOTBAR_H)
     {
-      points.push_front(p1);
-      points.push_front(p2);
+      points_[counter].x = sX + position_.x_ + camera_offset_x;
+      points_[counter].y = sY - position_.y_ + camera_offset_y;
+
+      ++counter;
+
+      points_[counter].x = -sX + position_.x_ + camera_offset_x;
+      points_[counter].y = sY - position_.y_ + camera_offset_y;
+
+      ++counter;
     }
 
     if(-sY + -position_.y_ + camera_offset_y >= HOTBAR_H)
     {
-      points.push_front(p3);
-      points.push_front(p4);
-    }
+      points_[counter].x = sX + position_.x_ + camera_offset_x;
+      points_[counter].y = -sY - position_.y_ + camera_offset_y;
 
-    p1 = {sY + position_.x_ + camera_offset_x, sX + -position_.y_ + camera_offset_y};
-    p2 = {-sY + position_.x_ + camera_offset_x, sX + -position_.y_ + camera_offset_y};
-    p3 = {sY + position_.x_ + camera_offset_x, -sX + -position_.y_ + camera_offset_y};
-    p4 = {-sY + position_.x_ + camera_offset_x, -sX + -position_.y_ + camera_offset_y};
+      ++counter;
+
+      points_[counter].x = -sX + position_.x_ + camera_offset_x;
+      points_[counter].y = -sY - position_.y_ + camera_offset_y;
+
+      ++counter;
+    }
 
     if(sX + -position_.y_ + camera_offset_y >= HOTBAR_H)
     {
-      points.push_front(p1);
-      points.push_front(p2);
+      points_[counter].x = sY + position_.x_ + camera_offset_x;
+      points_[counter].y = sX - position_.y_ + camera_offset_y;
+
+      ++counter;
+
+      points_[counter].x = -sY + position_.x_ + camera_offset_x;
+      points_[counter].y = sX - position_.y_ + camera_offset_y;
+
+      ++counter;
     }
 
     if(-sX + -position_.y_ + camera_offset_y >= HOTBAR_H)
     {
-      points.push_front(p3);
-      points.push_front(p4);
+      points_[counter].x = sY + position_.x_ + camera_offset_x;
+      points_[counter].y = -sX - position_.y_ + camera_offset_y;
+
+      ++counter;
+
+      points_[counter].x = -sY + position_.x_ + camera_offset_x;
+      points_[counter].y = -sX - position_.y_ + camera_offset_y;
+
+      ++counter;
     }
   }
 
-  int l = points.size();
-  int k = 0;
-
-  SDL_Point *p = (SDL_Point *)malloc(sizeof(SDL_Point) * l);
-
-  for(auto const &i : points)
-  {
-    p[k].x = i.x;
-    p[k++].y = i.y;
-  }
-
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderDrawPoints(renderer, p, l + 1);
-  free(p);
+  SDL_RenderDrawPoints(renderer, points_, counter + 1);
 }
 } // namespace OrbitSim

@@ -1,5 +1,7 @@
 #include "Application.hpp"
 
+#include <iostream>
+
 namespace OrbitSim
 {
 void Application::init()

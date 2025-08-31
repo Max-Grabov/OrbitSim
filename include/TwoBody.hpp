@@ -16,6 +16,8 @@ namespace OrbitSim
 class TwoBody : public Window
 {
 public:
+  TwoBody();
+
   void run(SDL_Renderer *renderer, const TextRenderer &text_renderer,
            const Uint8 *keystate) override;
 
@@ -24,16 +26,20 @@ public:
   void exit(SDL_Renderer *renderer) override;
 
 private:
-  Sphere sphere_one_, sphere_two_;
-  int camera_offset_x_{0}, camera_offset_y_{0};
+  Sphere sphere_one_;
+  Sphere sphere_two_;
+
+  int camera_offset_x_{0};
+  int camera_offset_y_{0};
   std::array<TextInput, 6> textboxes_;
   std::array<SDL_Rect, 6> textbox_borders_{
       SPHERE_ONE_MASS_BORDER,       SPHERE_TWO_MASS_BORDER,       SPHERE_ONE_VELOCITY_X_BORDER,
       SPHERE_ONE_VELOCITY_Y_BORDER, SPHERE_TWO_VELOCITY_X_BORDER, SPHERE_TWO_VELOCITY_Y_BORDER};
+
   int selected_box_{0};
   bool running_{false};
-  SDL_Event current_event_;
   bool pause_{false};
+  SDL_Event current_event_;
 
   void handleEvents(const SDL_Event &event, SDL_Renderer *renderer,
                     const TextRenderer &text_renderer, const Uint8 *keystate);

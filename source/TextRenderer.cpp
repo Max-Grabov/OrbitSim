@@ -1,7 +1,5 @@
 #include "TextRenderer.hpp"
 
-#include <iostream>
-
 namespace OrbitSim
 {
 
