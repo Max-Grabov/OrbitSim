@@ -6,7 +6,7 @@
 cmake -S . -B build
 cmake --build build
 
-./build/orbitsim
+./build/OrbitSim
 ```
 
 ## Contributions
