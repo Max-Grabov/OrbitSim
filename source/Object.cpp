@@ -2,9 +2,9 @@
 
 namespace OrbitSim
 {
-Object::Object(const int &x, const int &y, const int &z) : position_({x, y, z}) {}
+Object::Object(const int &x, const int &y, const int &z) : position_({x, y, z}), velocity_({0, 0, 0}), acceleration_({0, 0, 0}) {}
 
-Object::Object(Vector position) : position_(std::move(position)) {}
+Object::Object(Vector position) : position_(std::move(position)), velocity_({0, 0, 0}), acceleration_({0, 0, 0}) {}
 
 Object::Object(Vector position, VectorD velocity, VectorD acceleration)
     : position_(std::move(position)), velocity_(std::move(velocity)),

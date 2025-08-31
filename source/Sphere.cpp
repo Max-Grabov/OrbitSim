@@ -39,6 +39,10 @@ Sphere::Sphere(const Sphere &other) : radius_(other.radius_), mass_(other.mass_)
     return;
   }
 
+  delete[] points_;
+
+  points_ = new SDL_Point[6 * other.radius_]();
+
   for(size_t i = 0; i < other.radius_ * 6; ++i)
   {
     points_[i] = other.points_[i];
@@ -55,6 +59,10 @@ Sphere &Sphere::operator=(const Sphere &other)
     points_ = nullptr;
     return *this;
   }
+
+  delete[] points_;
+
+  points_ = new SDL_Point[6 * other.radius_]();
 
   for(size_t i = 0; i < other.radius_ * 6; ++i)
   {

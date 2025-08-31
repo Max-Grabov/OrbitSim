@@ -1,14 +1,42 @@
 #include "TextRenderer.hpp"
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
+#include <utility>
 
 namespace OrbitSim
 {
 
-void TextRenderer::init(SDL_Renderer *renderer)
+TextRenderer::TextRenderer(SDL_Renderer *renderer) : surface_(SDL_LoadBMP("include/font.bmp"))
 {
-  SDL_Surface *surface = SDL_LoadBMP("include/font.bmp");
-  texture_ = SDL_CreateTextureFromSurface(renderer, surface);
+  texture_ = SDL_CreateTextureFromSurface(renderer, surface_);
+}
 
-  SDL_FreeSurface(surface);
+TextRenderer::~TextRenderer()
+{
+  SDL_FreeSurface(surface_);
+}
+
+TextRenderer::TextRenderer(TextRenderer &&other) : dest_(std::move(other.dest_)), source_(std::move(other.source_))
+{
+  surface_ = other.surface_;
+  texture_ = other.texture_;
+
+  other.surface_ = nullptr;
+  other.texture_ = nullptr;
+}
+
+TextRenderer &TextRenderer::operator=(TextRenderer &&other)
+{
+  dest_ = std::move(other.dest_);
+  source_ = std::move(other.source_);
+
+  surface_ = other.surface_;
+  texture_ = other.texture_;
+
+  other.surface_ = nullptr;
+  other.texture_ = nullptr;
+
+  return *this;
 }
 
 void TextRenderer::render(SDL_Renderer *renderer, const std::string &input, const int &x,
@@ -97,6 +125,4 @@ void TextRenderer::clearRender(SDL_Renderer *renderer, const int &x, const int &
   SDL_RenderDrawRect(renderer, &to_delete);
   SDL_RenderFillRect(renderer, &to_delete);
 }
-
-TextRenderer::~TextRenderer() { SDL_DestroyTexture(texture_); }
 } // namespace OrbitSim

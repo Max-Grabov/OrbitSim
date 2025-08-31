@@ -1,6 +1,9 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mutex.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
 #include <string>
 
 #define LOWER_CASE_STARTY 6
@@ -38,15 +41,24 @@ public:
   // shared_ptr, since it won't call the required destroy texture method
   // TODO Possibly add a wrapper for things such as SDL_Texture and SDL_Renderer?
   SDL_Texture *texture_ = nullptr;
+  SDL_Surface *surface_ = nullptr;
 
   mutable SDL_Rect source_, dest_;
 
-  void init(SDL_Renderer *renderer);
+  TextRenderer(SDL_Renderer *renderer);
+
+  ~TextRenderer();
+
+  TextRenderer(TextRenderer &&other);
+
+  TextRenderer &operator=(TextRenderer &&other);
+
+  TextRenderer(const TextRenderer &other);
+
+  TextRenderer &operator=(const TextRenderer &other);
 
   void render(SDL_Renderer *renderer, const std::string &input, const int &x, const int &y) const;
 
-  void clearRender(SDL_Renderer *renderer, const int &x, const int &y) const;
-
-  ~TextRenderer();
+  void clearRender(SDL_Renderer *renderer, const int &x, const int &y) const; 
 };
 } // namespace OrbitSim
