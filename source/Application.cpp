@@ -1,16 +1,12 @@
 #include "Application.hpp"
 #include "TextRenderer.hpp"
 
-
 namespace OrbitSim
 {
 Application::Application() : window_(SDL_CreateWindow("OrbitSim", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_OPENGL)), renderer_(SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED)), text_renderer_(renderer_), keystate_(SDL_GetKeyboardState(NULL))
 {
   SDL_Init(SDL_INIT_EVERYTHING);
-}
 
-void Application::init()
-{
   running_ = true;
 
   // TODO Make this an enum in the future
@@ -31,16 +27,11 @@ void Application::run()
     {
       handleEvents();
     }
-
-    if(!running_)
-      break;
   }
 }
 
-void Application::exit()
+Application::~Application()
 {
-  running_ = false;
- 
   SDL_DestroyRenderer(renderer_);
   SDL_DestroyWindow(window_);
   SDL_Quit();
@@ -64,7 +55,7 @@ void Application::handleKeyboardInput()
   switch(event_.key.keysym.scancode)
   {
   case SDL_SCANCODE_ESCAPE:
-    exit();
+    running_ = false;
     return;
 
   case SDL_SCANCODE_TAB:

@@ -11,11 +11,17 @@ class Application
 public:
   Application();
 
-  void init();
+  Application &operator=(const Application &other) = delete;
+
+  Application(const Application &other) = delete;
+
+  Application &operator=(const Application &&other) = delete;
+
+  Application(const Application &&other) = delete;
+
+  ~Application();
 
   void run();
-
-  void exit();
 
 private:
   OneBody one_body_;
